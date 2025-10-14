@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
+import ImageData
+import cfg
+import platform
+import sys
+import os
+import os.path
+import uuid
 """
 SearchMetadata.py : ** REQUIRED ** El vostre codi de la classe SearchMetadata.
 
@@ -53,3 +61,65 @@ Notes:
     - Els operadors lògics NO modifiquen les llistes originals
     - Aquests mètodes NO retornen objectes Gallery, sinó llistes simples
 """
+
+class SearchMetadata (ImageData):
+    def __init__ (self):
+        super.__init__()
+        pass
+
+    def prompt (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['prompt'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def model (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['model'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def seed (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['seed'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def cfg_scale (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['cfg_scale'].find(sub) != -1:
+                values.append(uuid)
+        return values
+
+    def steps (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['steps'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def sampler (self, sub: str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['sampler'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def date (self, sub:str):
+        values  = []
+        for uuid, metadata in self._hash:
+            if metadata['date'].find(sub) != -1:
+                values.append(uuid)
+        return values
+    
+    def and_operator (self, list1: list, list2: list):
+        return [x for x in list1 if x in list2]
+    
+    def or_opperator (self, list1: list, list2: list):
+        return list( set(list1) | set(list2))
+
+        
