@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from hashlib import _Hash
+import cfg
 import json
+import os
+import copy
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
 
@@ -54,19 +56,27 @@ Notes:
 def Gallery():
     def __init__ (self, fitxer: str=''):
         self._fitxer = fitxer
-        self._hashmap = dict()
+        self._relative_paths = dict()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
-        self._images = None
         try:
             with open(fitxer, 'r') as file:
                 json_string = json.load(file)
                 self._gallery_name = json_string['gallery_name']
                 self._gallery_description = json_string['description']
                 self._created_date = json_string['created_date']
-                self._images = json_string['images']
+                list_file_paths = json_string['images']
         except FileNotFoundError as e:
             raise (f'Fixter no trobat {e}')
+        root_path = cfg.get_root()
+        for file_path in list_file_paths:
+            relative_path = copy.deepcopy(file_path)
+            file_path = os.path.join(root_path, file_path)
+            if os.path.exists(file_path):
+                self._hashmap[cfg.get_uuid(file_path)] = relative_path
 
-        
+
+
+
+
