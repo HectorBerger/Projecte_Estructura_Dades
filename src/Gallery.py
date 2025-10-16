@@ -3,6 +3,8 @@ import cfg
 import json
 import os
 import copy
+from collections import deque
+from ImageViewer import ImageViewer
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
 
@@ -53,15 +55,19 @@ Notes:
     - Les operacions d'afegir/eliminar són ràpides (no busquen a la llista)
 """
 
-def Gallery():
-    def __init__ (self, fitxer: str=''):
-        self._fitxer = fitxer
-        self._relative_paths = dict()
+def Gallery(ImageViewer):
+    def __init__ (self):
+        self._fitxer = None
+        self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
+
+
+    def load_file(self, file:str = ''):
+        self._file = file
         try:
-            with open(fitxer, 'r') as file:
+            with open(file, 'r') as file:
                 json_string = json.load(file)
                 self._gallery_name = json_string['gallery_name']
                 self._gallery_description = json_string['description']
@@ -71,10 +77,17 @@ def Gallery():
             raise (f'Fixter no trobat {e}')
         root_path = cfg.get_root()
         for file_path in list_file_paths:
-            relative_path = copy.deepcopy(file_path)
             file_path = os.path.join(root_path, file_path)
             if os.path.exists(file_path):
-                self._hashmap[cfg.get_uuid(file_path)] = relative_path
+                self._uuids.append(cfg.get_uuid(file_path))
+
+    def show(self):
+        for uuid in self._uuids:
+            self.show_image(uuid, mode)
+    
+    def add_image_at_end(uuid:str = ''):
+        self._
+
 
 
 
