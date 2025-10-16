@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from ImageData import ImageViewer
+import ImageData 
 import cfg
 import platform
 import sys
@@ -62,9 +62,9 @@ Notes:
     - Aquests mètodes NO retornen objectes Gallery, sinó llistes simples
 """
 
-class SearchMetadata (ImageData):
+class SearchMetadata (ImageData): #!!#!#!#!#!# NO DEBERíA HERETAR DE ImageData
     def __init__ (self):
-        super.__init__()
+        super.__init__() #!!#!#!#!#!# NO DEBERíA HERETAR DE ImageData Solo usarla para sus busquedas
         pass
 
     def prompt (self, sub: str):
