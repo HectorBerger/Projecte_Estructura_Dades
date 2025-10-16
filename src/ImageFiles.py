@@ -46,7 +46,7 @@ class ImageFiles:
         new_curr = set()
 
         # Recorre tots els subdirectoris i fitxers
-        for dirpath, _, filenames in os.walk(root):
+        for dirpath, _, filenames in os.walk(root): #aqui la _ es para no mirar las subcarpetas, pero no tengo claro si hay q mirarlas o no, es a lo duda
             for fname in filenames:
                 # Només considera arxius amb extensió .png (no sensible a majúscules)
                 if fname.lower().endswith(".png"):
