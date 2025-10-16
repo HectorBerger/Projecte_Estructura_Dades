@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-import ImageData
+from ImageData import ImageViewer
 import cfg
 import platform
 import sys

@@ -85,9 +85,14 @@ def Gallery(ImageViewer):
         for uuid in self._uuids:
             self.show_image(uuid, mode)
     
-    def add_image_at_end(uuid:str = ''):
-        self._
+    def add_image_at_end(self, uuid:str = ''):
+        self._uuids.append(uuid)
 
+    def remove_first_image(self):
+        hola = self._uuids.popleft()
+        
+    def remove_last_image(self):
+        hola = self._uudis.pop()
 
 
 
