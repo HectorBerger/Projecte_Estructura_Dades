@@ -29,7 +29,7 @@ Notes:
 """
 
 import os
-from Projecte_Estructura_Dades.src import cfg
+import cfg
 
 class ImageFiles:
     def __init__(self):
