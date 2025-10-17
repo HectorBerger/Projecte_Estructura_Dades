@@ -58,7 +58,6 @@ Notes:
     - Tots els camps de metadades es guarden com a strings
 """
 import json
-from PIL import Image
 from typing import Dict
 from cfg import read_png_metadata, get_png_dimensions  
 class ImageData:
@@ -95,13 +94,6 @@ class ImageData:
             dades = self._image_data[uuid]
         except:
             raise KeyError
-        """
-        img = Image.open(dades['file'])
-        metadata = img.text  # Diccionari amb les metadades embegudes
-
-        dimensions = (img.width, img.height)
-
-        """
 
         metadata = read_png_metadata(dades['file'])
         if metadata:

@@ -44,3 +44,17 @@ Notes:
     - Gestioneu les excepcions si la imatge no es pot mostrar
     - El format de sortida ha de ser llegible i ben organitzat
 """
+
+class ImageViewer:
+
+    def __init__(self, img):
+        self._image= img
+
+    def print_image(self, uuid: str) -> None:
+        pass
+
+    def show_file(self, file: str) -> None:
+        pass
+
+    def show_image(self, uuid: str, mode: int) -> None:
+        pass
