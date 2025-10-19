@@ -44,6 +44,7 @@ Notes:
     - Gestioneu les excepcions si la imatge no es pot mostrar
     - El format de sortida ha de ser llegible i ben organitzat
 """
+from PIL import Image
 
 class ImageViewer:
 
@@ -51,10 +52,36 @@ class ImageViewer:
         self._image= img
 
     def print_image(self, uuid: str) -> None:
-        pass
+        dades = self._image._image_data[uuid]
+        msg = f"Dimensions: {dades['width']} x {dades['height']}\n \
+            - Prompt: {dades['prompt'][:50]}... \n \
+            - Model: {dades['model']} \n \
+            - Seed: {dades['seed']} \n \
+            - CFG Scale: {dades['cfg_scale']} \n \
+            - Steps: {dades['steps']} \n \
+            - Sampler: {dades['sampler']} \n \
+            - Generated: {dades['generated']} \n \
+            - Created Date: {dades['created_date']} \n \
+            - UUID: {dades['uuid']} \n \
+            - Path de l'arxiu: {dades['file']}"
+        print(msg)
 
     def show_file(self, file: str) -> None:
         pass
 
     def show_image(self, uuid: str, mode: int) -> None:
-        pass
+        match mode:
+            case 0:
+                self.print_image(uuid)
+            case 1:
+                self.print_image(uuid)
+                file = self._image._image_data[uuid]['file']
+                self.show_file(file)
+                input("Pressiona Enter per continuar...")
+            case 2:
+                file = self._image._image_data[uuid]['file']
+                self.show_file(file)
+                input("Pressiona Enter per continuar...")
+
+            case _:
+                raise ValueError("Mode invàlid:", mode)
