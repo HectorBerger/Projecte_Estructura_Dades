@@ -5,6 +5,7 @@ import os
 import copy
 from collections import deque
 from ImageViewer import ImageViewer
+import time
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
 
@@ -55,14 +56,15 @@ Notes:
     - Les operacions d'afegir/eliminar són ràpides (no busquen a la llista)
 """
 
-def Gallery(ImageViewer):
-    def __init__ (self):
+def Gallery():
+    def __init__ (self, llista=None, tipus: str = '', string: str = ''):
         self._fitxer = None
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
-
+        if isinstance(llista, list):
+            self.crear_desde_llista(llista,tipus, string)
 
     def load_file(self, file:str = ''):
         self._file = file
@@ -81,6 +83,13 @@ def Gallery(ImageViewer):
             if os.path.exists(file_path):
                 self._uuids.append(cfg.get_uuid(file_path))
 
+    def crear_desde_llista(self,llista: list = None, tipus: str = '', string: str = ''):
+        for uuid in llista:
+            self.add_image_at_end(uuid)
+        self._gallery_description = f'Galeria creada utilizando la string {string} como clave de la busqueda en el campo {tipus} de su metadata'
+        self._gallery_name = f'Galeria de las imagenes relacionadas con {string} en el campo {tipus} de su metadata '
+        self._created_date = time.time()
+
     def show(self):
         for uuid in self._uuids:
             self.show_image(uuid, mode)
@@ -93,7 +102,6 @@ def Gallery(ImageViewer):
         
     def remove_last_image(self):
         hola = self._uudis.pop()
-
 
 
 
