@@ -19,8 +19,10 @@ import uuid
 
 # Selecció del vostre PATH amb les imatges generades
 #
-# ROOT_DIR  = r"../generated_images"                                   # Github
-ROOT_DIR = r"C:\Users\34660\OneDrive - UAB\Enginyeria de Dades UAB\2n curs\1r quatri 2n\Estructures de Dades\Projecte_Estructura_Dades\generated_images"  # Windows
+# ROOT_DIR  = r"../generated_images"   
+# ROOT_DIR_DIOGO = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "generated_images"))        
+# ROOT_DIR_GitHub =  r"C:\Users\34660\OneDrive - UAB\Enginyeria de Dades UAB\2n curs\1r quatri 2n\Estructures de Dades\Projecte_Estructura_Dades\generated_images"  # Windows                         # Github
+ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "generated_images"))
 # ROOT_DIR = r"/opt/_uab/ed/DS_fall25-main/generated_images"          # Linux
 # ROOT_DIR = r"/Users/usuari/_uab/ed/DS_fall25-main/generated_images" # MacOS
 #
