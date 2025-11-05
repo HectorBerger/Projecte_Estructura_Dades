@@ -57,12 +57,13 @@ Notes:
 """
 
 def Gallery():
-    def __init__ (self, llista=None, tipus: str = '', string: str = ''):
+    def __init__ (self, llista=None, tipus: str = '', string: str = '', Image_viewer : ImageViewer= None):
         self._fitxer = None
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
+        self._Image_viewer = Image_viewer
         if isinstance(llista, list):
             self.crear_desde_llista(llista,tipus, string)
 
@@ -90,7 +91,7 @@ def Gallery():
         self._gallery_name = f'Galeria de las imagenes relacionadas con {string} en el campo {tipus} de su metadata '
         self._created_date = time.time()
 
-    def show(self):
+    def show(self, mode):
         for uuid in self._uuids:
             self.show_image(uuid, mode)
     
