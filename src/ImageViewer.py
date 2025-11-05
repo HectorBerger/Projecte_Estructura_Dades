@@ -46,10 +46,11 @@ Notes:
 """
 from PIL import Image
 
+
 class ImageViewer:
 
     def __init__(self, img):
-        self._image= img
+        self._image = img
 
     def print_image(self, uuid: str) -> None:
         dades = self._image._image_data[uuid]
@@ -67,7 +68,11 @@ class ImageViewer:
         print(msg)
 
     def show_file(self, file: str) -> None:
-        pass
+        try:
+            img = Image.open(file)
+            img.show()
+        except Exception as e:
+            print(f"No s'ha pogut mostrar la imatge: {e}")
 
     def show_image(self, uuid: str, mode: int) -> None:
         match mode:
@@ -75,11 +80,11 @@ class ImageViewer:
                 self.print_image(uuid)
             case 1:
                 self.print_image(uuid)
-                file = self._image._image_data[uuid]['file']
+                file = self._image._image_data[uuid]["file"]
                 self.show_file(file)
                 input("Pressiona Enter per continuar...")
             case 2:
-                file = self._image._image_data[uuid]['file']
+                file = self._image._image_data[uuid]["file"]
                 self.show_file(file)
                 input("Pressiona Enter per continuar...")
 

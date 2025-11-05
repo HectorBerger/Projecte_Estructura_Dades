@@ -3,14 +3,15 @@
 test-images.py : Script de proves per visualitzar imatges generades amb IA
 """
 
-import cfg      # Necessari per a la pràctica !!
-                # Mireu el contingut de l'arxiu
+import cfg  # Necessari per a la pràctica !!
+
+# Mireu el contingut de l'arxiu
 
 import os.path
 import sys
-import numpy    #  installed in anaconda by default
+import numpy  #  installed in anaconda by default
 import time
-from PIL import Image      # $ pip install pillow
+from PIL import Image  # $ pip install pillow
 
 
 # STEP 1: Cerca de les imatges al filesystem
@@ -32,54 +33,54 @@ except Exception as e:
 
 print("Metadades trobades:")
 print(metadata)
-print('')
+print("")
 
 if not metadata:
     print("WARNING: Imatge sense metadades generades!")
 
 # Extracció de metadades específiques d'IA generada
 try:
-    prompt = metadata.get('Prompt', 'None')
+    prompt = metadata.get("Prompt", "None")
 except:
     prompt = "None"
 
 try:
-    seed = metadata.get('Seed', 'None')
+    seed = metadata.get("Seed", "None")
 except:
     seed = "None"
 
 try:
-    cfg_scale = metadata.get('CFG_Scale', 'None')
+    cfg_scale = metadata.get("CFG_Scale", "None")
 except:
     cfg_scale = "None"
 
 try:
-    steps = metadata.get('Steps', 'None')
+    steps = metadata.get("Steps", "None")
 except:
     steps = "None"
 
 try:
-    sampler = metadata.get('Sampler', 'None')
+    sampler = metadata.get("Sampler", "None")
 except:
     sampler = "None"
 
 try:
-    model = metadata.get('Model', 'None')
+    model = metadata.get("Model", "None")
 except:
     model = "None"
 
 try:
-    generated = metadata.get('Generated', 'None')
+    generated = metadata.get("Generated", "None")
 except:
     generated = "None"
 
 try:
-    uuid_val = metadata.get('UUID', 'None')
+    uuid_val = metadata.get("UUID", "None")
 except:
     uuid_val = "None"
 
 try:
-    created_date = metadata.get('Created_Date', 'None')
+    created_date = metadata.get("Created_Date", "None")
 except:
     created_date = "None"
 
@@ -97,10 +98,12 @@ image_uuid = cfg.get_uuid(name_file)
 
 
 # STEP 4: Visualització
-if (cfg.DISPLAY_MODE < 2):
+if cfg.DISPLAY_MODE < 2:
     print("Visualitzant [{}]".format(uri_file))
     print(" Dimensions: {}x{} pixels".format(width, height))
-    print(" Prompt:     {}".format(prompt[:100] + "..." if len(prompt) > 100 else prompt))
+    print(
+        " Prompt:     {}".format(prompt[:100] + "..." if len(prompt) > 100 else prompt)
+    )
     print(" Model:      {}".format(model))
     print(" Seed:       {}".format(seed))
     print(" CFG Scale:  {}".format(cfg_scale))
@@ -111,7 +114,7 @@ if (cfg.DISPLAY_MODE < 2):
     print(" UUID (calc):{}".format(image_uuid))
     print(" Arxiu:      {}".format(name_file))
 
-if (cfg.DISPLAY_MODE > 0):
+if cfg.DISPLAY_MODE > 0:
     # Mostrar la imatge (simple display)
     print("\nMostrant imatge...")
 
