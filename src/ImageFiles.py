@@ -33,39 +33,49 @@ import cfg
 
 class ImageFiles:
     def __init__(self):
-        # Guarda l'estat anterior dels arxius PNG trobats
-        self._prev = set()
-        # Guarda la llista d'arxius afegits des de l'última lectura
-        self._added = []
-        # Guarda la llista d'arxius eliminats des de l'última lectura
-        self._removed = []
+        # Estat de l'escaneig anterior (set de paths relatius canònics)
+        self._prev: set[str] = set()
+        # Deltas entre l'últim reload i l'actual
+        self._added: list[str] = []
+        self._removed: list[str] = []
 
-    def reload_fs(self) -> None:
-        # Obté el directori arrel des de la configuració
-        root = cfg.get_root()
-        new_curr = set()
+    def reload_fs(self, path: str) -> None:
+        # Si ens passen una cadena buida o None, fem servir la config
+        root = path if path else cfg.get_root()
 
-        # Recorre tots els subdirectoris i fitxers
-        for dirpath, _, filenames in os.walk(root): #aqui la _ es para no mirar las subcarpetas, pero no tengo claro si hay q mirarlas o no, es a lo duda
+        if not os.path.isdir(root):
+            # Si el path no existeix, no toquem l'estat anterior però netegem deltes
+            print(f"[ImageFiles] Avís: el directori no existeix: {root}")
+            self._added = []
+            self._removed = []
+            return
+
+        new_curr: set[str] = set()
+
+        # os.walk recorre recursivament subdirectoris.
+        # El segon valor (dirnames) no l'usem explícitament, però la recursió hi és.
+        for dirpath, _dirnames, filenames in os.walk(root):
             for fname in filenames:
-                # Només considera arxius amb extensió .png (no sensible a majúscules)
                 if fname.lower().endswith(".png"):
                     abs_path = os.path.join(dirpath, fname)
-                    # Obté el path relatiu i canònic respecte a ROOT_DIR
+                    # Canonitza a RELATIU respecte ROOT_DIR
                     rel_canon = cfg.get_canonical_pathfile(abs_path)
                     new_curr.add(rel_canon)
 
-        # Calcula els arxius afegits (estan a new_curr però no a _prev)
-        self._added = sorted(list(new_curr - self._prev))
-        # Calcula els arxius eliminats (estan a _prev però no a new_curr)
-        self._removed = sorted(list(self._prev - new_curr))
-        # Actualitza l'estat anterior per a la següent crida
+        added = new_curr - self._prev
+        removed = self._prev - new_curr
+
+        # Desa versions ordenades i IMMUTABLES cap enfora
+        self._added = sorted(added)
+        self._removed = sorted(removed)
+
+        # Actualitza l'estat per la propera vegada
         self._prev = new_curr
 
     def files_added(self) -> list:
-        # Retorna la llista d'arxius afegits des de l'última crida a reload_fs
+        """Retorna els paths relatius dels arxius nous des de l'últim reload."""
         return list(self._added)
 
     def files_removed(self) -> list:
-        # Retorna la llista d'arxius eliminats des de l'última crida a reload_fs
+        """Retorna els paths relatius dels arxius que han desaparegut des de l'últim reload."""
         return list(self._removed)
