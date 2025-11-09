@@ -41,6 +41,10 @@ class ImageID:
         self._uuid2file = {}  # uuid_str -> rel_path_canon (str)
 
     def _to_rel_canonical(self, file: str) -> str:
+        # Validació d'entrada
+        if not isinstance(file, str):
+            raise TypeError("File path must be a string")
+            
         abs_path = file if os.path.isabs(file) else os.path.join(cfg.get_root(), file)
         abs_path = os.path.realpath(abs_path)
         return cfg.get_canonical_pathfile(abs_path)
@@ -53,14 +57,14 @@ class ImageID:
             return self._file2uuid[rel_path]
 
         # UUID determinista basat en el path relatiu canònic
-        uuid_obj = cfg.get_uuid(rel_path)  # requerit per l’enunciat
+        uuid_obj = cfg.get_uuid(rel_path)
         uuid_str = str(uuid_obj)
 
-        # Col·lisió improbable: mateix uuid assignat a un altre fitxer
+        # Comprovació de col·lisions
         other = self._uuid2file.get(uuid_str)
         if other is not None and other != rel_path:
             print(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
-            return None
+            return "" # Retorna cadena buida en cas de col·lisió per mantenir str
 
         # Registra
         self._file2uuid[rel_path] = uuid_str
@@ -70,7 +74,7 @@ class ImageID:
     def get_uuid(self, file: str) -> str | None:
         """Retorna l'UUID (str) associat a 'file' si existeix, altrament None."""
         rel_path = self._to_rel_canonical(file)
-        return self._file2uuid.get(rel_path)
+        return self._file2uuid.get(rel_path) # Podriem retornar "" directament si no existeix
 
     def remove_uuid(self, uuid: str) -> None:
         """Elimina el UUID del registre; si no existeix, no fa res."""
