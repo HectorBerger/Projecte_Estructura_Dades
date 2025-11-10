@@ -65,7 +65,7 @@ class Gallery:
         self._created_date = ""
 
 
-    def load_file(self, file:str = ''):
+    """def load_file(self, file:str = ''):
         self._file = file
 
         try:
@@ -82,21 +82,59 @@ class Gallery:
         for file_path in list_file_paths:
             file_path = os.path.join(root_path, file_path)
             if os.path.exists(file_path):
-                self._uuids.append(cfg.get_uuid(file_path))
+                self._uuids.append(cfg.get_uuid(file_path))"""
 
-    def show(self):
-        for uuid in self._uuids:
-            self.show_image(uuid, mode)
-    
-    def add_image_at_end(self, uuid:str = ''):
-        self._uuids.append(uuid)
+def load_file(self, file: str = '') -> None:
+    if not file:
+        raise ValueError("load_file: file path required")
 
-    def remove_first_image(self):
-        hola = self._uuids.popleft()
-        
-    def remove_last_image(self):
-        hola = self._uudis.pop()
+    self._file = file
+    try:
+        with open(file, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Fitxer no trobat: {e}") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"JSON invàlid: {e}") from e
 
+    # Extraure camps amb seguretat
+    self._gallery_name = data.get('gallery_name', '')
+    self._gallery_description = data.get('description', '')
+    self._created_date = data.get('created_date', '')
+    images = data.get('images', []) or []
+
+    root_path = cfg.get_root()
+    self._uuids.clear()
+    for rel_path in images:
+        abs_path = os.path.join(root_path, rel_path)
+        if os.path.exists(abs_path):
+            # cfg.get_uuid retorna un objecte UUID; emmagatzemem str()
+            self._uuids.append(str(cfg.get_uuid(abs_path)))
+        else:
+            # Ignora imatges inexistents
+            continue        
+
+def show(self):
+    viewer = ImageViewer()
+    mode = cfg.DISPLAY_MODE if hasattr(cfg, "DISPLAY_MODE") else 0
+    for uuid in self._uuids:
+        # Assumim que ImageViewer.show_image accepta (uuid_str, mode)
+        viewer.show_image(uuid, mode)
+
+def add_image_at_end(self, uuid:str = ''):
+    if not uuid:
+        raise ValueError("add_image_at_end: uuid required")
+    self._uuids.append(uuid)
+
+def remove_first_image(self):
+    if not self._uuids:
+        return None
+    return self._uuids.popleft()
+
+def remove_last_image(self):
+    if not self._uuids:
+        return None
+    return self._uuids.pop()
 
 
 
