@@ -8,6 +8,7 @@ import os
 import os.path
 import uuid
 from Gallery import Gallery
+from ImageData import ImageData
 """
 SearchMetadata.py : ** REQUIRED ** El vostre codi de la classe SearchMetadata.
 
@@ -64,58 +65,58 @@ Notes:
 """
 
 class SearchMetadata (): 
-    def __init__ (self):
-        pass
+    def __init__ (self, Image_Data: ImageData) :
+        self._ImageData = Image_Data
 
     def prompt (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['prompt'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'prompt', sub)
+        return values
     
     def model (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['model'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'model', sub)
+        return values
     
     def seed (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['seed'].find(sub) != -1:
                 values.append(uuid)
 
-        return Gallery(values, 'seed', sub)
+        return values
     
     def cfg_scale (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['cfg_scale'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'cfg_scale', sub)
+        return values
 
     def steps (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['steps'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'steps', sub)
+        return values
     
     def sampler (self, sub: str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['sampler'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'sampler', sub)
+        return values
     
     def date (self, sub:str):
         values  = []
-        for uuid, metadata in self._hash:
+        for uuid, metadata in self._ImageData.get_Image_Data().items():
             if metadata['date'].find(sub) != -1:
                 values.append(uuid)
-        return Gallery(values, 'date', sub)
+        return values
     
     def and_operator (self, list1: list, list2: list):
         return [x for x in list1 if x in list2]

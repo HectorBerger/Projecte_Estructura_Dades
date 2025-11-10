@@ -57,7 +57,7 @@ Notes:
 """
 
 def Gallery():
-    def __init__ (self, llista=None, tipus: str = '', string: str = '', Image_viewer : ImageViewer= None):
+    def __init__ (self, llista=None, Image_viewer : ImageViewer= None):
         self._fitxer = None
         self._uuids = deque()
         self._gallery_name = None
@@ -65,7 +65,7 @@ def Gallery():
         self._created_date = None
         self._Image_viewer = Image_viewer
         if isinstance(llista, list):
-            self.crear_desde_llista(llista,tipus, string)
+            self.crear_desde_llista(llista)
 
     def load_file(self, file:str = ''):
         self._file = file
@@ -84,16 +84,16 @@ def Gallery():
             if os.path.exists(file_path):
                 self._uuids.append(cfg.get_uuid(file_path))
 
-    def crear_desde_llista(self,llista: list = None, tipus: str = '', string: str = ''):
+    def crear_desde_llista(self,llista: list = None):
         for uuid in llista:
             self.add_image_at_end(uuid)
-        self._gallery_description = f'Galeria creada utilizando la string {string} como clave de la busqueda en el campo {tipus} de su metadata'
-        self._gallery_name = f'Galeria de las imagenes relacionadas con {string} en el campo {tipus} de su metadata '
+        self._gallery_description = f'Galeria Customizada'
+        self._gallery_name = f'Galeria generada desda una cerca de coincidencia en algu parametre de la metadata de les imatges'
         self._created_date = time.time()
 
     def show(self, mode):
         for uuid in self._uuids:
-            self.show_image(uuid, mode)
+            self._Image_viewer.show_image(uuid, mode)
     
     def add_image_at_end(self, uuid:str = ''):
         self._uuids.append(uuid)

@@ -147,3 +147,6 @@ class ImageData:
 
     def get_dimensions(self, uuid: str) -> tuple:
         return self._image_data[uuid]['dimensions']
+    
+    def get_Image_Data(self):
+        return self._image_data
