@@ -55,17 +55,19 @@ Notes:
     - Les operacions d'afegir/eliminar són ràpides (no busquen a la llista)
 """
 
-def Gallery(ImageViewer):
+class Gallery:
+
     def __init__ (self):
         self._fitxer = None
         self._uuids = deque()
-        self._gallery_name = None
-        self._gallery_description = None
-        self._created_date = None
+        self._gallery_name = ""
+        self._gallery_description = ""
+        self._created_date = ""
 
 
     def load_file(self, file:str = ''):
         self._file = file
+
         try:
             with open(file, 'r') as file:
                 json_string = json.load(file)
@@ -73,6 +75,7 @@ def Gallery(ImageViewer):
                 self._gallery_description = json_string['description']
                 self._created_date = json_string['created_date']
                 list_file_paths = json_string['images']
+                
         except FileNotFoundError as e:
             raise (f'Fixter no trobat {e}')
         root_path = cfg.get_root()
