@@ -56,7 +56,7 @@ Notes:
     - Les operacions d'afegir/eliminar són ràpides (no busquen a la llista)
 """
 
-def Gallery():
+class Gallery():
     def __init__ (self, llista=None, Image_viewer : ImageViewer= None):
         self._fitxer = None
         self._uuids = deque()
@@ -91,7 +91,7 @@ def Gallery():
         self._gallery_name = f'Galeria generada desda una cerca de coincidencia en algu parametre de la metadata de les imatges'
         self._created_date = time.time()
 
-    def show(self, mode):
+    def show(self, mode: int):
         for uuid in self._uuids:
             self._Image_viewer.show_image(uuid, mode)
     

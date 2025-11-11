@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import ImageData 
 import cfg
 import platform
 import sys
@@ -9,6 +8,7 @@ import os.path
 import uuid
 from Gallery import Gallery
 from ImageData import ImageData
+
 """
 SearchMetadata.py : ** REQUIRED ** El vostre codi de la classe SearchMetadata.
 
