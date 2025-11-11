@@ -45,12 +45,12 @@ Notes:
     - El format de sortida ha de ser llegible i ben organitzat
 """
 from PIL import Image
-
+from ImageData import ImageData
 
 class ImageViewer:
 
-    def __init__(self, img):
-        self._image = img
+    def __init__(self, Image_Data: ImageData):
+        self._image = Image_Data
 
     def print_image(self, uuid: str) -> None:
         dades = self._image._image_data[uuid]
@@ -75,18 +75,17 @@ class ImageViewer:
             print(f"No s'ha pogut mostrar la imatge: {e}")
 
     def show_image(self, uuid: str, mode: int) -> None:
-        match mode:
-            case 0:
+        if mode == 0:
                 self.print_image(uuid)
-            case 1:
+        elif mode == 1:
                 self.print_image(uuid)
                 file = self._image._image_data[uuid]["file"]
                 self.show_file(file)
                 input("Pressiona Enter per continuar...")
-            case 2:
+        elif mode == 2:
                 file = self._image._image_data[uuid]["file"]
                 self.show_file(file)
                 input("Pressiona Enter per continuar...")
 
-            case _:
+        else:
                 raise ValueError("Mode invàlid:", mode)

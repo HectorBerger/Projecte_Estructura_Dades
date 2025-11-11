@@ -59,7 +59,8 @@ Notes:
 """
 import json
 from typing import Dict
-from cfg import read_png_metadata, get_png_dimensions  
+import cfg
+
 class ImageData:
 
     def __init__(self):
@@ -95,7 +96,7 @@ class ImageData:
         except:
             raise KeyError
 
-        metadata = read_png_metadata(dades['file'])
+        metadata = cfg.read_png_metadata(dades['file'])
         if metadata:
             prompt = metadata.get('Prompt', 'None')
             model = metadata.get('Model', 'None')

@@ -65,7 +65,7 @@ Notes:
 """
 
 class SearchMetadata (): 
-    def __init__ (self, Image_Data: ImageData) :
+    def __init__ (self, Image_Data: ImageData = None) :
         self._ImageData = Image_Data
 
     def prompt (self, sub: str):

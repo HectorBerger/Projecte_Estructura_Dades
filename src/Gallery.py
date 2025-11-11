@@ -5,6 +5,7 @@ import os
 import copy
 from collections import deque
 from ImageViewer import ImageViewer
+from ImageID import ImageID
 import time
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
@@ -57,15 +58,13 @@ Notes:
 """
 
 class Gallery():
-    def __init__ (self, llista=None, Image_viewer : ImageViewer= None):
+    def __init__ (self,Image_viewer : ImageViewer = None, Image_ID: ImageID = None):
         self._fitxer = None
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
         self._Image_viewer = Image_viewer
-        if isinstance(llista, list):
-            self.crear_desde_llista(llista)
 
     def load_file(self, file:str = ''):
         self._file = file

@@ -45,7 +45,7 @@ class ImageID:
         abs_path = os.path.realpath(abs_path)
         return cfg.get_canonical_pathfile(abs_path)
 
-    def generate_uuid(self, file: str) -> str | None:
+    def generate_uuid(self, file: str) -> str:
         rel_path = self._to_rel_canonical(file)
 
         # Ja registrat per aquest fitxer
@@ -67,7 +67,7 @@ class ImageID:
         self._uuid2file[uuid_str]  = rel_path
         return uuid_str
 
-    def get_uuid(self, file: str) -> str | None:
+    def get_uuid(self, file: str) -> str:
         """Retorna l'UUID (str) associat a 'file' si existeix, altrament None."""
         rel_path = self._to_rel_canonical(file)
         return self._file2uuid.get(rel_path)
