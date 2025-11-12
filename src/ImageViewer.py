@@ -52,7 +52,8 @@ class ImageViewer:
     def __init__(self, Image_Data: ImageData):
         self._image = Image_Data
 
-"""    def print_image(self, uuid: str) -> None:
+    """
+    def print_image(self, uuid: str) -> None:
         dades = self._image._image_data[uuid]
         msg = f"Dimensions: {dades['width']} x {dades['height']}\n \
             - Prompt: {dades['prompt'][:50]}... \n \
@@ -65,21 +66,29 @@ class ImageViewer:
             - Created Date: {dades['created_date']} \n \
             - UUID: {dades['uuid']} \n \
             - Path de l'arxiu: {dades['file']}"
-        print(msg)"""
+        print(msg)
+        """
 
     def print_image(self, uuid: str) -> None:
-        w, h = self._image.get_dimensions(uuid)
-        prompt = self._image.get_prompt(uuid)
-        model  = self._image.get_model(uuid)
-        seed   = self._image.get_seed(uuid)
-        cfg_s  = self._image.get_cfg_scale(uuid)
-        steps  = self._image.get_steps(uuid)
-        samp   = self._image.get_sampler(uuid)
-        gen    = self._image.get_generated(uuid)
-        date   = self._image.get_created_date(uuid)
+        if uuid is None:
+            raise KeyError
+            
+        try:
+            w, h = self._image.get_dimensions(uuid)
+            prompt = self._image.get_prompt(uuid)
+            model  = self._image.get_model(uuid)
+            seed   = self._image.get_seed(uuid)
+            cfg_s  = self._image.get_cfg_scale(uuid)
+            steps  = self._image.get_steps(uuid)
+            samp   = self._image.get_sampler(uuid)
+            gen    = self._image.get_generated(uuid)
+            date   = self._image.get_created_date(uuid)
+        
 
-        # Necessitem el path del fitxer per el msg
-        path = self._image.get_Image_Data()[uuid]['file']
+            # Necessitem el path del fitxer per el msg
+            path = self._image.get_Image_Data()[uuid]['file']
+        except:
+            raise KeyError("No image with UUID:", uuid)
 
         msg = (
             f"Dimensions: {w} x {h}\n"
@@ -105,17 +114,25 @@ class ImageViewer:
             print(f"No s'ha pogut mostrar la imatge: {e}")
 
     def show_image(self, uuid: str, mode: int) -> None:
+            
         if mode == 0:
+            if uuid in self._image:
                 self.print_image(uuid)
         elif mode == 1:
-                self.print_image(uuid)
-                file = self._image._image_data[uuid]["file"]
-                self.show_file(file)
-                input("Pressiona Enter per continuar...")
+            self.print_image(uuid)
+            file = self._image._image_data[uuid]["file"]
+            self.show_file(file)
+            input("Pressiona Enter per continuar...")
         elif mode == 2:
-                file = self._image._image_data[uuid]["file"]
-                self.show_file(file)
-                input("Pressiona Enter per continuar...")
+            file = self._image._image_data[uuid]["file"]
+            self.show_file(file)
+            input("Pressiona Enter per continuar...")
 
         else:
-                raise ValueError("Mode invàlid:", mode)
+            raise ValueError("Mode invàlid:", mode)
+                
+    def __len__(self):
+        pass
+    
+    def __str__(self):
+        pass
