@@ -66,7 +66,7 @@ Notes:
 
 class SearchMetadata (): 
     def __init__ (self, Image_Data: ImageData = None) :
-        self._ImageData = Image_Data
+        self._ImageData = Image_Data or ImageData()
 
     def prompt (self, sub: str):
         values  = []
@@ -121,7 +121,7 @@ class SearchMetadata ():
     def and_operator (self, list1: list, list2: list):
         return [x for x in list1 if x in list2]
     
-    def or_opperator (self, list1: list, list2: list):
+    def or_operator (self, list1: list, list2: list):
         return list( set(list1) | set(list2))
 
         

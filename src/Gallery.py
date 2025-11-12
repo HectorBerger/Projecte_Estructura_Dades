@@ -71,12 +71,14 @@ class Gallery():
         try:
             with open(file, 'r') as file:
                 json_string = json.load(file)
-                self._gallery_name = json_string['gallery_name']
-                self._gallery_description = json_string['description']
-                self._created_date = json_string['created_date']
-                list_file_paths = json_string['images']
         except FileNotFoundError as e:
             raise (f'Fixter no trobat {e}')
+
+        self._gallery_name = json_string['gallery_name']
+        self._gallery_description = json_string['description']
+        self._created_date = json_string['created_date']
+        list_file_paths = json_string['images']
+        
         root_path = cfg.get_root()
         for file_path in list_file_paths:
             file_path = os.path.join(root_path, file_path)
@@ -101,8 +103,4 @@ class Gallery():
         hola = self._uuids.popleft()
         
     def remove_last_image(self):
-        hola = self._uudis.pop()
-
-
-
-
+        hola = self._uuids.pop()

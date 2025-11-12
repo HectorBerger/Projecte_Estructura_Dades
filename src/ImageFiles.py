@@ -40,9 +40,12 @@ class ImageFiles:
         # Guarda la llista d'arxius eliminats des de l'última lectura
         self._removed = []
 
-    def reload_fs(self) -> None:
+    def reload_fs(self, path: str = None) -> None:
         # Obté el directori arrel des de la configuració
-        root = cfg.get_root()
+        if path is None:
+            root = cfg.get_root()
+        else:
+            root = path
         new_curr = set()
 
         # Recorre tots els subdirectoris i fitxers

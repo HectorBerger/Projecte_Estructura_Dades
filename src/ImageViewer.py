@@ -52,7 +52,7 @@ class ImageViewer:
     def __init__(self, Image_Data: ImageData):
         self._image = Image_Data
 
-    def print_image(self, uuid: str) -> None:
+"""    def print_image(self, uuid: str) -> None:
         dades = self._image._image_data[uuid]
         msg = f"Dimensions: {dades['width']} x {dades['height']}\n \
             - Prompt: {dades['prompt'][:50]}... \n \
@@ -65,7 +65,37 @@ class ImageViewer:
             - Created Date: {dades['created_date']} \n \
             - UUID: {dades['uuid']} \n \
             - Path de l'arxiu: {dades['file']}"
+        print(msg)"""
+
+    def print_image(self, uuid: str) -> None:
+        w, h = self._image.get_dimensions(uuid)
+        prompt = self._image.get_prompt(uuid)
+        model  = self._image.get_model(uuid)
+        seed   = self._image.get_seed(uuid)
+        cfg_s  = self._image.get_cfg_scale(uuid)
+        steps  = self._image.get_steps(uuid)
+        samp   = self._image.get_sampler(uuid)
+        gen    = self._image.get_generated(uuid)
+        date   = self._image.get_created_date(uuid)
+
+        # Necessitem el path del fitxer per el msg
+        path = self._image.get_Image_Data()[uuid]['file']
+
+        msg = (
+            f"Dimensions: {w} x {h}\n"
+            f"- Prompt: {prompt[:50]}...\n"
+            f"- Model: {model}\n"
+            f"- Seed: {seed}\n"
+            f"- CFG Scale: {cfg_s}\n"
+            f"- Steps: {steps}\n"
+            f"- Sampler: {samp}\n"
+            f"- Generated: {gen}\n"
+            f"- Created Date: {date}\n"
+            f"- UUID: {uuid}\n"
+            f"- Path de l'arxiu: {path}"
+        )
         print(msg)
+
 
     def show_file(self, file: str) -> None:
         try:
