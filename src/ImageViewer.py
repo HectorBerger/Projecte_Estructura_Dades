@@ -52,7 +52,7 @@ class ImageViewer:
     def __init__(self, Image_Data: ImageData):
         self._image = Image_Data
 
-"""    def print_image(self, uuid: str) -> None:
+    """    def print_image(self, uuid: str) -> None:
         dades = self._image._image_data[uuid]
         msg = f"Dimensions: {dades['width']} x {dades['height']}\n \
             - Prompt: {dades['prompt'][:50]}... \n \
@@ -65,7 +65,8 @@ class ImageViewer:
             - Created Date: {dades['created_date']} \n \
             - UUID: {dades['uuid']} \n \
             - Path de l'arxiu: {dades['file']}"
-        print(msg)"""
+        print(msg)
+        """
 
     def print_image(self, uuid: str) -> None:
         w, h = self._image.get_dimensions(uuid)
@@ -116,6 +117,11 @@ class ImageViewer:
                 file = self._image._image_data[uuid]["file"]
                 self.show_file(file)
                 input("Pressiona Enter per continuar...")
-
         else:
                 raise ValueError("Mode invàlid:", mode)
+        
+    def __str__(self):
+        return 'hola'
+    
+    def __len__(self):
+        return 0

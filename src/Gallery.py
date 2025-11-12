@@ -104,3 +104,9 @@ class Gallery():
         
     def remove_last_image(self):
         hola = self._uuids.pop()
+
+    def __str__(self):
+        return 'hola'
+    
+    def __len__(self):
+        return 0

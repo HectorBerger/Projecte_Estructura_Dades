@@ -107,7 +107,7 @@ class ImageData:
             generated = metadata.get('Generated', 'None')
             created_date = metadata.get('Created_Date', 'None')
     
-        dimensions = get_png_dimensions(dades['file'])
+        dimensions = cfg.get_png_dimensions(dades['file'])
 
         self._image_data[uuid] = {
             'prompt': prompt,
@@ -151,3 +151,10 @@ class ImageData:
     
     def get_Image_Data(self):
         return self._image_data
+    
+
+    def __str__(self):
+        return 'hola'
+    
+    def __len__(self):
+        return 0

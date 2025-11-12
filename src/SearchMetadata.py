@@ -123,5 +123,11 @@ class SearchMetadata ():
     
     def or_operator (self, list1: list, list2: list):
         return list( set(list1) | set(list2))
+    
+    def __str__(self):
+        return 'hola'
+    
+    def __len__(self):
+        return 0
 
         

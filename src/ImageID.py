@@ -77,3 +77,10 @@ class ImageID:
         rel_path = self._uuid2file.pop(uuid, None)
         if rel_path is not None:
             self._file2uuid.pop(rel_path, None)
+
+
+    def __str__(self):
+        return 'hola'
+    
+    def __len__(self):
+        return 0
