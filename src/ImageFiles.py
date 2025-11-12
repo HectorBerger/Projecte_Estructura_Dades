@@ -43,13 +43,12 @@ class ImageFiles:
     def reload_fs(self, path: str = None) -> None:
         # Obté el directori arrel des de la configuració
         if path is None:
-            root = cfg.get_root()
-        else:
-            root = path
+            path = cfg.get_root()
+        
         new_curr = set()
 
         # Recorre tots els subdirectoris i fitxers
-        for dirpath, _, filenames in os.walk(root): #aqui la _ es para no mirar las subcarpetas, pero no tengo claro si hay q mirarlas o no, es a lo duda
+        for dirpath, _, filenames in os.walk(path): #aqui la _ es para no mirar las subcarpetas, pero no tengo claro si hay q mirarlas o no, es a lo duda
             for fname in filenames:
                 # Només considera arxius amb extensió .png (no sensible a majúscules)
                 if fname.lower().endswith(".png"):
@@ -74,7 +73,7 @@ class ImageFiles:
         return list(self._removed)
 
     def __str__(self):
-        return 'hola'
+        return f'ImageFiles: Added {self._added}, Removed: {self._removed}'
     
     def __len__(self):
-        return 0
+        return len(self._prev) #No utilitzat

@@ -70,15 +70,15 @@ class ImageData:
         if uuid not in self._image_data:
             self._image_data[uuid] = {
                 'file': file,
-                'prompt': 'None',
-                'model': 'None',
-                'seed': 'None',
-                'cfg_scale': 'None',
-                'steps': 'None',
-                'sampler': 'None',
-                'generated': 'None',
-                'created_date': 'None',
-                'dimensions': ('None', 'None') # O 'None', 'None' ???
+                'prompt': None,
+                'model': None,
+                'seed': None,
+                'cfg_scale': None,
+                'steps': None,
+                'sampler': None,
+                'generated': None,
+                'created_date': None,
+                'dimensions': (None, None) 
             }
 
         else:
@@ -104,14 +104,14 @@ class ImageData:
             raise AttributeError(f"Error reading metadata/dimensions for {filepath}: {e}")
             
         if metadata:
-            prompt = metadata.get('Prompt', 'None')
-            model = metadata.get('Model', 'None')
-            seed = metadata.get('Seed', 'None')
-            cfg_scale = metadata.get('CFG_Scale', 'None')
-            steps = metadata.get('Steps', 'None')
-            sampler = metadata.get('Sampler', 'None')
-            generated = metadata.get('Generated', 'None')
-            created_date = metadata.get('Created_Date', 'None')
+            prompt = metadata.get('Prompt', None)
+            model = metadata.get('Model', None)
+            seed = metadata.get('Seed', None)
+            cfg_scale = metadata.get('CFG_Scale', None)
+            steps = metadata.get('Steps', None)
+            sampler = metadata.get('Sampler', None)
+            generated = metadata.get('Generated', None)
+            created_date = metadata.get('Created_Date', None)
     
         dimensions = cfg.get_png_dimensions(dades['file'])
 
@@ -166,9 +166,9 @@ class ImageData:
     def get_Image_Data(self):
         return self._image_data
     
-
     def __str__(self):
-        return 'hola'
+        return "ImageData"
+ 
     
     def __len__(self):
-        return 0
+        return len(self._image_data.keys())

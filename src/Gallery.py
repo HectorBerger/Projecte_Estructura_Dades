@@ -99,7 +99,7 @@ class Gallery():
         hola = self._uuids.pop()
 
     def __str__(self):
-        return 'hola'
+        return 'Gallery'
     
     def __len__(self):
         return len(self._uuids)

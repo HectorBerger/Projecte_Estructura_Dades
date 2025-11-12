@@ -80,7 +80,7 @@ class ImageID:
 
 
     def __str__(self):
-        return 'hola'
+        return f'ImageID: {self._file2uuid}'
     
     def __len__(self):
-        return 0
+        return len(self._file2uuid)

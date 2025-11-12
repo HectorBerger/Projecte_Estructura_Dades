@@ -121,7 +121,7 @@ class ImageViewer:
                 raise ValueError("Mode invàlid:", mode)
     
     def __str__(self):
-        return 'hola'
+        return 'ImageViewer'
     
     def __len__(self):
         return 0

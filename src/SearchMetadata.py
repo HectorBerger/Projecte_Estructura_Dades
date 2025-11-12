@@ -125,7 +125,7 @@ class SearchMetadata ():
         return list( set(list1) | set(list2))
         
     def __str__(self):
-        return 'hola'
+        return 'SearchMetadata'
     
     def __len__(self):
         return 0
