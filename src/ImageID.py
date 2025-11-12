@@ -59,7 +59,7 @@ class ImageID:
         # Col·lisió improbable: mateix uuid assignat a un altre fitxer
         other = self._uuid2file.get(uuid_str)
         if other is not None and other != rel_path:
-            print(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
+            raise ValueError(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
             return None
 
         # Registra

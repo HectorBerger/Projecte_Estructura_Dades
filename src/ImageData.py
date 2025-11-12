@@ -112,14 +112,8 @@ class ImageData:
             sampler = metadata.get('Sampler', 'None')
             generated = metadata.get('Generated', 'None')
             created_date = metadata.get('Created_Date', 'None')
-<<<<<<< HEAD
     
         dimensions = cfg.get_png_dimensions(dades['file'])
-=======
-            
-        if not isinstance(dimensions, tuple) and len(dimensions) != 2:
-            dimensions = ('None', 'None')
->>>>>>> 914da4722efa74313589f26a63f013f35eaf778f
 
         self._image_data[uuid] = {
             'prompt': prompt,
@@ -171,17 +165,9 @@ class ImageData:
     def get_Image_Data(self):
         return self._image_data
     
-<<<<<<< HEAD
 
     def __str__(self):
         return 'hola'
     
     def __len__(self):
         return 0
-=======
-    def __len__(self):
-        pass
-    
-    def __str__(self):
-        pass
->>>>>>> 914da4722efa74313589f26a63f013f35eaf778f

@@ -74,7 +74,7 @@ class ImageFiles:
         return list(self._removed)
     
     def __str__(self):
-        return 'hola'
+        return f"ImageFiles({len(self._prev)} PNG files)"
     
     def __len__(self):
-        return 0
+        return len(self._prev)
