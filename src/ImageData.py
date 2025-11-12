@@ -131,6 +131,7 @@ class ImageData:
     def _get_metadata_field(self, uuid: str, field: str) -> str:
         if uuid not in self._image_data:
             raise KeyError(f"Image with UUID {uuid} not found.")
+        
         return str(self._image_data[uuid][field])
 
     def get_prompt(self, uuid: str) -> str:

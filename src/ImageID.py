@@ -44,7 +44,7 @@ class ImageID:
         abs_path = file if os.path.isabs(file) else os.path.join(cfg.get_root(), file)
         abs_path = os.path.realpath(abs_path)
         return cfg.get_canonical_pathfile(abs_path)
-
+    
     def generate_uuid(self, file: str) -> str:
         rel_path = self._to_rel_canonical(file)
 

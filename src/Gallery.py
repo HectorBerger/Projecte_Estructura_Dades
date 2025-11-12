@@ -59,20 +59,20 @@ Notes:
 
 class Gallery():
     def __init__ (self,Image_viewer : ImageViewer = None, Image_ID: ImageID = None):
-        self._fitxer = None
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
         self._Image_viewer = Image_viewer
+        self._Image_ID = Image_ID
 
     def load_file(self, file:str = ''):
+        if len(self._uuids) > 0:
+            self._uuids = deque()
         self._file = file
-        try:
-            with open(file, 'r') as file:
+        with open(file, 'r') as file:
                 json_string = json.load(file)
-        except FileNotFoundError as e:
-            raise (f'Fixter no trobat {e}')
+
 
         self._gallery_name = json_string['gallery_name']
         self._gallery_description = json_string['description']
@@ -84,13 +84,6 @@ class Gallery():
             file_path = os.path.join(root_path, file_path)
             if os.path.exists(file_path):
                 self._uuids.append(cfg.get_uuid(file_path))
-
-    def crear_desde_llista(self,llista: list = None):
-        for uuid in llista:
-            self.add_image_at_end(uuid)
-        self._gallery_description = f'Galeria Customizada'
-        self._gallery_name = f'Galeria generada desda una cerca de coincidencia en algu parametre de la metadata de les imatges'
-        self._created_date = time.time()
 
     def show(self, mode: int):
         for uuid in self._uuids:
@@ -109,4 +102,4 @@ class Gallery():
         return 'hola'
     
     def __len__(self):
-        return 0
+        return len(self._uuids)

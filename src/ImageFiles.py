@@ -72,9 +72,9 @@ class ImageFiles:
     def files_removed(self) -> list:
         # Retorna la llista d'arxius eliminats des de l'última crida a reload_fs
         return list(self._removed)
-    
+
     def __str__(self):
-        return f"ImageFiles({len(self._prev)} PNG files)"
+        return 'hola'
     
     def __len__(self):
-        return len(self._prev)
+        return 0
