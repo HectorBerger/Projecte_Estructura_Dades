@@ -78,25 +78,31 @@ class ImageData:
                 'sampler': 'None',
                 'generated': 'None',
                 'created_date': 'None',
-                'dimensions': (None, None) # O 'None', 'None' ???
+                'dimensions': ('None', 'None') # O 'None', 'None' ???
             }
 
         else:
             raise KeyError("COLISIÓ") #Evitar colisions
 
     def remove_image(self, uuid: str) -> None:
-        if uuid in self._image_data:
-            del self._image_data[uuid]
-        else:
+        if uuid not in self._image_data:
             raise KeyError("No image found to remove with UUID:", uuid)
 
-    def load_metadata(self, uuid: str) -> None:
-        try:
-            dades = self._image_data[uuid]
-        except:
-            raise KeyError
+        del self._image_data[uuid]
 
-        metadata = cfg.read_png_metadata(dades['file'])
+    def load_metadata(self, uuid: str) -> None:
+        if uuid not in self._image_data:
+            raise KeyError(f"Image with UUID {uuid} not found in collection.")
+        
+        dades = self._image_data[uuid]
+        filepath = dades['file']
+        
+        try:
+            metadata = cfg.read_png_metadata(filepath)
+            dimensions = cfg.get_png_dimensions(filepath)
+        except AttributeError as e:
+            raise AttributeError(f"Error reading metadata/dimensions for {filepath}: {e}")
+            
         if metadata:
             prompt = metadata.get('Prompt', 'None')
             model = metadata.get('Model', 'None')
@@ -106,8 +112,14 @@ class ImageData:
             sampler = metadata.get('Sampler', 'None')
             generated = metadata.get('Generated', 'None')
             created_date = metadata.get('Created_Date', 'None')
+<<<<<<< HEAD
     
         dimensions = cfg.get_png_dimensions(dades['file'])
+=======
+            
+        if not isinstance(dimensions, tuple) and len(dimensions) != 2:
+            dimensions = ('None', 'None')
+>>>>>>> 914da4722efa74313589f26a63f013f35eaf778f
 
         self._image_data[uuid] = {
             'prompt': prompt,
@@ -119,42 +131,57 @@ class ImageData:
             'generated': generated,
             'created_date': created_date,
             'dimensions': dimensions
+
         }
         
+    def _get_metadata_field(self, uuid: str, field: str) -> str:
+        if uuid not in self._image_data:
+            raise KeyError(f"Image with UUID {uuid} not found.")
+        return str(self._image_data[uuid][field])
 
     def get_prompt(self, uuid: str) -> str:
-        return self._image_data[uuid]['prompt']
+        return self._get_metadata_field(uuid, 'prompt')
 
     def get_model(self, uuid: str) -> str:
-        return self._image_data[uuid]['model']
+        return self._get_metadata_field(uuid, 'model')
 
     def get_seed(self, uuid: str) -> str:
-        return self._image_data[uuid]['seed']
+        return self._get_metadata_field(uuid, 'seed')
 
     def get_cfg_scale(self, uuid: str) -> str:
-        return self._image_data[uuid]['cfg_scale']
+        return self._get_metadata_field(uuid, 'cfg_scale')
 
     def get_steps(self, uuid: str) -> str:
-        return self._image_data[uuid]['steps']
+        return self._get_metadata_field(uuid, 'steps')
 
     def get_sampler(self, uuid: str) -> str:
-        return self._image_data[uuid]['sampler']
+        return self._get_metadata_field(uuid, 'sampler')
 
     def get_generated(self, uuid: str) -> str:
-        return self._image_data[uuid]['generated']
+        return self._get_metadata_field(uuid, 'generated')
 
     def get_created_date(self, uuid: str) -> str:
-        return self._image_data[uuid]['created_date']
-
+        return self._get_metadata_field(uuid, 'created_date')
+    
     def get_dimensions(self, uuid: str) -> tuple:
+        if uuid not in self._image_data:
+            raise KeyError("No image found with UUID:", uuid)
         return self._image_data[uuid]['dimensions']
     
     def get_Image_Data(self):
         return self._image_data
     
+<<<<<<< HEAD
 
     def __str__(self):
         return 'hola'
     
     def __len__(self):
         return 0
+=======
+    def __len__(self):
+        pass
+    
+    def __str__(self):
+        pass
+>>>>>>> 914da4722efa74313589f26a63f013f35eaf778f
