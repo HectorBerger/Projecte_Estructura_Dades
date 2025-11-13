@@ -69,7 +69,7 @@ class ImageData:
         self._image_data: Dict[str, Dict] = {} # {UUID : {Data}} 
 
     def __iter__(self):
-        return self._data.__iter__()
+        return self._image_data.__iter__()
 
     def add_image(self, uuid: str, file: str) -> None:
         if uuid not in self._image_data:
@@ -99,8 +99,10 @@ class ImageData:
         if uuid not in self._image_data:
             raise KeyError(f"Image with UUID {uuid} not found in collection.")
         
+        dades = self._image_data[uuid]
+        filepath = dades['file']
         root = cfg.get_root()
-        path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), self._data[uuid][0]))
+        path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), filepath))
         file = os.path.realpath(os.path.join(root, path))
         
         if not os.path.isdir(file) and os.path.exists(file):
@@ -110,10 +112,6 @@ class ImageData:
             metadata = getattr(img, "text", None)
 
         """ 
-        dades = self._image_data[uuid]
-        filepath = dades['file']
-        
-        
         try:
             metadata = cfg.read_png_metadata(filepath)
             dimensions = cfg.get_png_dimensions(filepath)
@@ -131,7 +129,7 @@ class ImageData:
             generated = metadata.get('Generated', None)
             created_date = metadata.get('Created_Date', None)
     
-        dimensions = cfg.get_png_dimensions(dades['file'])
+        dimensions = cfg.get_png_dimensions(self._image_data[uuid]['file'])
 
         self._image_data[uuid] = {
             'prompt': prompt,
@@ -189,8 +187,8 @@ class ImageData:
     
     def __str__(self):
         msg = ''
-        for uuid in self._data:
-            msg += (f'- UUID : {uuid} | Path relatiu: {self._data[uuid]} \n')
+        for uuid in self._image_data:
+            msg += (f'- UUID : {uuid} | Path relatiu: {self._image_data[uuid]} \n')
         
         return msg
  

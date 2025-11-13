@@ -5,7 +5,7 @@ import os
 from collections import deque
 from ImageViewer import ImageViewer
 from ImageID import ImageID
-
+import glob
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
 
@@ -58,6 +58,13 @@ Notes:
 
 class Gallery():
     def __init__(self, image_viewer: ImageViewer = None, image_id: ImageID = None):
+        if image_viewer is None and not (isinstance(image_viewer, ImageViewer)):
+            raise TypeError("image_viewer ha de ser una instància d'ImageViewer o compatible")
+
+        if image_id is None and not (isinstance(image_id, ImageID)):
+            raise TypeError("image_id ha de ser una instància d'ImageID o compatible")
+
+
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
@@ -70,12 +77,18 @@ class Gallery():
         # Neteja la galeria anterior
         self._uuids.clear()
 
-        # Path absolut al JSON
-        if not os.path.isabs(file):
-            abs_path = os.path.join(cfg.get_root(), file)
-        else:
-            abs_path = file
+        root = cfg.get_root()
+        abs_path = file if os.path.isabs(file) else os.path.join(root, file)
+        abs_path = os.path.normpath(abs_path)
 
+        if os.path.isdir(abs_path):
+            json_files = glob(os.path.join(abs_path, "*.json"))
+            if not json_files:
+                raise FileNotFoundError(f"No s'ha trobat cap arxiu JSON dins del directori: {abs_path}")
+            abs_path = json_files[0]
+
+        if not os.path.isfile(abs_path):
+            raise FileNotFoundError(f"No s'ha trobat l'arxiu JSON: {abs_path}")
 
         self._file = abs_path
 
