@@ -74,11 +74,16 @@ class Gallery():
         self._file = None
     
     def __iter__(self):
-        return iter(self._uuids)
+        return iter(list(self._uuids))
+
+    def _is_JsonFile(self, file:str) -> bool:  
+        return file.lower().endswith('.json')
 
     def load_file(self, file: str) -> None:
         # Neteja la galeria anterior
         self._uuids.clear()
+        if self._is_JsonFile(file) == False:
+            return None
 
         root = cfg.get_root()
         abs_path = file if os.path.isabs(file) else os.path.join(root, file)
@@ -89,14 +94,13 @@ class Gallery():
             if not json_files:
                 raise FileNotFoundError(f"No s'ha trobat cap arxiu JSON dins del directori: {abs_path}")
             abs_path = json_files[0]
-            abs_path = cfg.get_canonical_pathfile(abs_path)
 
         if not os.path.isfile(abs_path):
             raise FileNotFoundError(f"No s'ha trobat l'arxiu JSON: {abs_path}")
 
-        self._file = abs_path
+        self._file = cfg.get_canonical_pathfile(abs_path)
 
-        with open(abs_path, 'r', encoding='utf-8') as f:
+        with open(abs_path, 'r', encoding='utf-8') as f:    
             data = json.load(f)
 
         self._gallery_name = data.get('gallery_name', '')
@@ -119,27 +123,32 @@ class Gallery():
                     uuid = str(cfg.get_uuid(canon))
                 if uuid is not None:
                     self._uuids.append(uuid)
+                    print("DEBUG: Afegida imatge a la galeria:", img_path, "UUID:", uuid) #NUNCA LLEGA AQUí
 
-    def show(self, mode: int = 0) -> None:
+    def show(self) -> None:
         # Galeria buida o sense viewer → res a fer
         if not self._uuids or self._image_viewer is None:
             return
 
         for uuid in list(self._uuids):
-            self._image_viewer.show_image(uuid, mode)
+            self._image_viewer.show_image(uuid, 2)
     
     def add_image_at_end(self, uuid: str) -> None:
         self._uuids.append(uuid)
 
     def remove_first_image(self) -> None:
         # Deixem que deque llanci IndexError si està buida (el test ho comprova)
+        if len(self._uuids) == 0:
+            return None
         self._uuids.popleft()
         
     def remove_last_image(self) -> None:
+        if len(self._uuids) == 0:
+            return None
         self._uuids.pop()
 
     def __str__(self):
-        return 'Gallery'
+        return 'Gallery: ' + ', '.join(self._uuids)
     
     def __len__(self):
         return len(self._uuids)

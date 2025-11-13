@@ -71,11 +71,11 @@ class ImageViewer:
             date    = self._image.get_created_date(uuid)
             path    = self._image.get_file(uuid)
         except KeyError:
-            print(f"[ImageViewer] UUID inexistent: {uuid}")
+            print(f"[ImageViewer] UUID inexistent : {uuid}")
             return
 
         msg = (
-            f"Dimensions: {w} x {h}\n"
+            f"- Dimensions: {w} x {h}\n"
             f"- Prompt: {prompt[:50]}...\n"
             f"- Model: {model}\n"
             f"- Seed: {seed}\n"
@@ -103,7 +103,7 @@ class ImageViewer:
         try:
             file_path = self._image.get_file(uuid)
         except KeyError:
-            print(f"[ImageViewer] UUID inexistent: {uuid}")
+            print(f"[ImageViewer] UUID inexistent: {uuid}") 
             return
 
         if mode == 0:

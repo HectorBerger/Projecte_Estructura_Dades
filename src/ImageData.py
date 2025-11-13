@@ -87,8 +87,7 @@ class ImageData:
             }
 
         else:
-            print("[ImageData] L'UUID ja existeix:", uuid)
-            raise KeyError("COLISIÓ") #Evitar colisions
+            raise KeyError("COLISIÓ: Ja existeix una imatge amb aquest UUID:", uuid)
 
     def remove_image(self, uuid: str) -> None:
         if uuid not in self._image_data.keys():
@@ -128,6 +127,7 @@ class ImageData:
     
 
         self._image_data[uuid] = {
+            'file': filepath,
             'prompt': prompt,
             'model': model,
             'seed': seed,
@@ -142,8 +142,9 @@ class ImageData:
         
     def _get_metadata_field(self, uuid: str, field: str) -> str:
         if uuid not in self._image_data.keys():
-            print("[ImageData] UUID inexistent:", uuid) ####NO DEBERíA FALLAR   ALGO PASA CON LOS UUIDS
             raise KeyError(f"Image with UUID {uuid} not found.")
+        if field not in self._image_data[uuid]:
+            raise KeyError(f"Field '{field}' not found for image with UUID {uuid}.")
         
         return str(self._image_data[uuid][field])
     
@@ -185,10 +186,10 @@ class ImageData:
                 return uuid
         raise KeyError("No image found with file:", file)
     
-    """ 
+     
     def get_Image_Data(self):
         return self._image_data
-    """
+    
     
     def __str__(self):
         msg = ''
