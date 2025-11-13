@@ -79,6 +79,9 @@ class Gallery():
     def _is_JsonFile(self, file:str) -> bool:  
         return file.lower().endswith('.json')
 
+    def _is_JsonFile(self, file:str) -> bool:
+        return file.lower().endswith('.json')
+
     def load_file(self, file: str) -> None:
         # Neteja la galeria anterior
         self._uuids.clear()
@@ -94,6 +97,8 @@ class Gallery():
             if not json_files:
                 raise FileNotFoundError(f"No s'ha trobat cap arxiu JSON dins del directori: {abs_path}")
             abs_path = json_files[0]
+            abs_path = cfg.get_canonical_pathfile(abs_path)
+
 
         if not os.path.isfile(abs_path):
             raise FileNotFoundError(f"No s'ha trobat l'arxiu JSON: {abs_path}")
