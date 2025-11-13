@@ -79,7 +79,7 @@ class Gallery():
     def load_file(self, file: str) -> None:
         # Neteja la galeria anterior
         self._uuids.clear()
-        if self._is_JsonFile(file) == False
+        if self._is_JsonFile(file) == False:
             return None
 
         root = cfg.get_root()
