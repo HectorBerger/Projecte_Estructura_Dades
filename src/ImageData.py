@@ -60,11 +60,16 @@ Notes:
 import json
 from typing import Dict
 import cfg
-
+import os
+from PIL import Image
 class ImageData:
 
+    __slots__ = '_image_data'
     def __init__(self):
         self._image_data: Dict[str, Dict] = {} # {UUID : {Data}} 
+
+    def __iter__(self):
+        return self._data.__iter__()
 
     def add_image(self, uuid: str, file: str) -> None:
         if uuid not in self._image_data:
@@ -94,14 +99,27 @@ class ImageData:
         if uuid not in self._image_data:
             raise KeyError(f"Image with UUID {uuid} not found in collection.")
         
+        root = cfg.get_root()
+        path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), self._data[uuid][0]))
+        file = os.path.realpath(os.path.join(root, path))
+        
+        if not os.path.isdir(file) and os.path.exists(file):
+
+            img = Image.open(file)
+
+            metadata = getattr(img, "text", None)
+
+        """ 
         dades = self._image_data[uuid]
         filepath = dades['file']
+        
         
         try:
             metadata = cfg.read_png_metadata(filepath)
             dimensions = cfg.get_png_dimensions(filepath)
         except AttributeError as e:
             raise AttributeError(f"Error reading metadata/dimensions for {filepath}: {e}")
+        """
             
         if metadata:
             prompt = metadata.get('Prompt', None)
@@ -133,6 +151,9 @@ class ImageData:
             raise KeyError(f"Image with UUID {uuid} not found.")
         
         return str(self._image_data[uuid][field])
+    
+    def get_file(self, uuid:str):
+        return self._get_metadata_field(uuid, 'file')
 
     def get_prompt(self, uuid: str) -> str:
         return self._get_metadata_field(uuid, 'prompt')
@@ -167,7 +188,11 @@ class ImageData:
         return self._image_data
     
     def __str__(self):
-        return "ImageData"
+        msg = ''
+        for uuid in self._data:
+            msg += (f'- UUID : {uuid} | Path relatiu: {self._data[uuid]} \n')
+        
+        return msg
  
     
     def __len__(self):

@@ -97,20 +97,28 @@ def main():
 
     #3) Llegir metadades d'algunes imatges
     img_data = ImageData()
-    count = 0
-    while count < 5:
-        for img_file in img_files.files_added():
+    for img_file in img_files.files_added():
             uuid = img_id.get_uuid(img_file)
             img_data.add_image(uuid, img_file)
             img_data.load_metadata(uuid)
-            count +=1
+        
+            
         
 
     #4) Visualitzar imatges
+    img_viewer = ImageViewer(img_data)
+    img_viewer.show_image(cfg.get_uuid(path_file_exemple), mode=1)
 
     #5) Carregar i mostrar galeries
+    gallery = Gallery(img_viewer, img_id)
+    gallery_file = os.path.join(cfg.get_root(), 'galleries', 'example_gallery.json')
+    gallery.load_gallery(gallery_file)
 
     #6) Fer cerques i crear galeries a partir dels resultats
+    search = SearchMetadata(img_data)
+    results = search.search_by_prompt("dragon", case_sensitive=False)
+    print(f"Imatges trobades amb 'dragon' al prompt: {len(results)}")
+
 
 if __name__ == "__main__":
     main()
