@@ -126,19 +126,19 @@ class ImageData:
             created_date = metadata.get('Created_Date', None)
     
 
-        self._image_data[uuid] = {
-            'file': filepath,
-            'prompt': prompt,
-            'model': model,
-            'seed': seed,
-            'cfg_scale': cfg_scale,
-            'steps': steps,
-            'sampler': sampler,
-            'generated': generated,
-            'created_date': created_date,
-            'dimensions': dimensions
+            self._image_data[uuid] = {
+                'file': filepath,
+                'prompt': prompt,
+                'model': model,
+                'seed': seed,
+                'cfg_scale': cfg_scale,
+                'steps': steps,
+                'sampler': sampler,
+                'generated': generated,
+                'created_date': created_date,
+                'dimensions': dimensions
 
-        }
+            }
         
     def _get_metadata_field(self, uuid: str, field: str) -> str:
         if uuid not in self._image_data.keys():

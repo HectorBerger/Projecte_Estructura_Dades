@@ -113,13 +113,11 @@ class Gallery():
         self._created_date = data.get('created_date', '')
         images = data.get('images', [])
 
-        root = cfg.get_root()
         for rel_path in images:
             img_path = rel_path
             if not os.path.isabs(img_path):
                 img_path = os.path.join(root, rel_path)
-            canon = cfg.get_canonical_pathfile(img_path)
-            if os.path.exists(canon):
+                canon = cfg.get_canonical_pathfile(img_path)
                 # UUID coherent amb la resta del sistema
                 if self._image_id is not None:
                     uuid = self._image_id.generate_uuid(img_path)
