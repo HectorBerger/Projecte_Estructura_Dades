@@ -107,9 +107,9 @@ def main():
      
     #4) Visualitzar imatges
     img_viewer = ImageViewer(img_data)
-    uuid_exemple = str(cfg.get_uuid(path_file_exemple))
-    
-    img_viewer.show_image("0b4993aa-093c-42a6-a90a-073dce964bf0", mode=1)
+    uuid_exemple = img_id.get_uuid(path_file_exemple)
+    print(uuid_exemple, path_file_exemple)
+    img_viewer.show_image(uuid_exemple, mode=1)
 
     #5) Carregar i mostrar galeries
     gallery = Gallery(img_viewer, img_id)

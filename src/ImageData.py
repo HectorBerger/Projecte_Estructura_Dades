@@ -179,8 +179,16 @@ class ImageData:
             raise KeyError("No image found with UUID:", uuid)
         return self._image_data[uuid]['dimensions']
     
+    def get_uuid(self, file: str) -> str:
+        for uuid in self._image_data:   
+            if self._image_data[uuid]['file'] == file:
+                return uuid
+        raise KeyError("No image found with file:", file)
+    
+    """ 
     def get_Image_Data(self):
         return self._image_data
+    """
     
     def __str__(self):
         msg = ''
