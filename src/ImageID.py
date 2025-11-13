@@ -39,40 +39,40 @@ class ImageID:
         self._file2uuid = {}  # rel_path_canon -> uuid_str
         self._uuid2file = {}  # uuid_str -> rel_path_canon
 
-    def _to_rel_canonical(self, file: str) -> str:
+    def _rel_to_canonical(self, file: str) -> str:
         abs_path = file if os.path.isabs(file) else os.path.join(cfg.get_root(), file)
         abs_path = os.path.realpath(abs_path)
         return cfg.get_canonical_pathfile(abs_path)
     
     def generate_uuid(self, file: str) -> str:
-        rel_path = self._to_rel_canonical(file)
+        canon = self._rel_to_canonical(file) 
 
         # Ja existeix per aquest fitxer
-        if rel_path in self._file2uuid:
-            return self._file2uuid[rel_path]
+        if canon in self._file2uuid:
+            return self._file2uuid[canon]
 
         # UUID determinista basat en el path canònic
-        uuid_obj = cfg.get_uuid(rel_path)
+        uuid_obj = cfg.get_uuid(canon)
         uuid_str = str(uuid_obj)
 
         # Col·lisió: mateix UUID per fitxer diferent
         other = self._uuid2file.get(uuid_str)
-        if other is not None and other != rel_path:
+        if other is not None and other != canon:
             print(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
             return None
 
-        self._file2uuid[rel_path] = uuid_str
-        self._uuid2file[uuid_str] = rel_path
+        self._file2uuid[canon] = uuid_str
+        self._uuid2file[uuid_str] = canon
         return uuid_str
 
     def get_uuid(self, file: str) -> str:
-        rel_path = self._to_rel_canonical(file)
-        return self._file2uuid.get(rel_path)
+        canon = self._rel_to_canonical(file)
+        return self._file2uuid.get(canon)
 
     def remove_uuid(self, uuid: str) -> None:
-        rel_path = self._uuid2file.pop(uuid, None)
-        if rel_path is not None:
-            self._file2uuid.pop(rel_path, None)
+        canon = self._uuid2file.pop(uuid, None)
+        if canon is not None:
+            self._file2uuid.pop(canon, None)
 
     def __str__(self):
         return f'ImageID: {self._file2uuid}'

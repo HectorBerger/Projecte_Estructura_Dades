@@ -118,13 +118,12 @@ class Gallery():
             img_path = rel_path
             if not os.path.isabs(img_path):
                 img_path = os.path.join(root, rel_path)
-
-            if os.path.exists(img_path):
+            canon = cfg.get_canonical_pathfile(img_path)
+            if os.path.exists(canon):
                 # UUID coherent amb la resta del sistema
                 if self._image_id is not None:
                     uuid = self._image_id.generate_uuid(img_path)
                 else:
-                    canon = cfg.get_canonical_pathfile(img_path)
                     uuid = str(cfg.get_uuid(canon))
                 if uuid is not None:
                     self._uuids.append(uuid)
