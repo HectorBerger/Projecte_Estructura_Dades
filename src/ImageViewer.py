@@ -45,41 +45,30 @@ Notes:
     - El format de sortida ha de ser llegible i ben organitzat
 """
 from PIL import Image
+import os
+import cfg
 from ImageData import ImageData
 
 class ImageViewer:
 
-    def __init__(self, Image_Data: ImageData):
-        self._image = Image_Data
-
-    """ def print_image(self, uuid: str) -> None:
-        dades = self._image._image_data[uuid]
-        msg = f"Dimensions: {dades['width']} x {dades['height']}\n \
-            - Prompt: {dades['prompt'][:50]}... \n \
-            - Model: {dades['model']} \n \
-            - Seed: {dades['seed']} \n \
-            - CFG Scale: {dades['cfg_scale']} \n \
-            - Steps: {dades['steps']} \n \
-            - Sampler: {dades['sampler']} \n \
-            - Generated: {dades['generated']} \n \
-            - Created Date: {dades['created_date']} \n \
-            - UUID: {dades['uuid']} \n \
-            - Path de l'arxiu: {dades['file']}"
-        print(msg)"""
+    def __init__(self, image_data: ImageData):
+        self._image = image_data
 
     def print_image(self, uuid: str) -> None:
-        w, h = self._image.get_dimensions(uuid)
-        prompt = self._image.get_prompt(uuid)
-        model  = self._image.get_model(uuid)
-        seed   = self._image.get_seed(uuid)
-        cfg_s  = self._image.get_cfg_scale(uuid)
-        steps  = self._image.get_steps(uuid)
-        samp   = self._image.get_sampler(uuid)
-        gen    = self._image.get_generated(uuid)
-        date   = self._image.get_created_date(uuid)
-
-        # Necessitem el path del fitxer per el msg
-        path = self._image.get_Image_Data()[uuid]['file']
+        try:
+            w, h    = self._image.get_dimensions(uuid)
+            prompt  = self._image.get_prompt(uuid)
+            model   = self._image.get_model(uuid)
+            seed    = self._image.get_seed(uuid)
+            cfg_s   = self._image.get_cfg_scale(uuid)
+            steps   = self._image.get_steps(uuid)
+            samp    = self._image.get_sampler(uuid)
+            gen     = self._image.get_generated(uuid)
+            date    = self._image.get_created_date(uuid)
+            path    = self._image.get_file(uuid)
+        except KeyError:
+            print(f"[ImageViewer] UUID inexistent: {uuid}")
+            return
 
         msg = (
             f"Dimensions: {w} x {h}\n"
@@ -96,8 +85,10 @@ class ImageViewer:
         )
         print(msg)
 
-
     def show_file(self, file: str) -> None:
+        # Accepta path relatiu a ROOT_DIR
+        if not os.path.isabs(file):
+            file = os.path.join(cfg.get_root(), file)
         try:
             img = Image.open(file)
             img.show()
@@ -105,21 +96,24 @@ class ImageViewer:
             print(f"No s'ha pogut mostrar la imatge: {e}")
 
     def show_image(self, uuid: str, mode: int) -> None:
-        if mode == 0:
-                self.print_image(uuid)
-        elif mode == 1:
-                self.print_image(uuid)
-                file = self._image._image_data[uuid]["file"]
-                self.show_file(file)
-                input("Pressiona Enter per continuar...")
-        elif mode == 2:
-                file = self._image._image_data[uuid]["file"]
-                self.show_file(file)
-                input("Pressiona Enter per continuar...")
+        try:
+            file_path = self._image.get_file(uuid)
+        except KeyError:
+            print(f"[ImageViewer] UUID inexistent: {uuid}")
+            return
 
+        if mode == 0:
+            self.print_image(uuid)
+        elif mode == 1:
+            self.print_image(uuid)
+            self.show_file(file_path)
+            input("Prem Enter per continuar...")
+        elif mode == 2:
+            self.show_file(file_path)
+            input("Prem Enter per continuar...")
         else:
-                raise ValueError("Mode invàlid:", mode)
-    
+            print(f"[ImageViewer] Mode invàlid: {mode}")
+
     def __str__(self):
         return 'ImageViewer'
     

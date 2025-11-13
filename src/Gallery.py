@@ -2,11 +2,10 @@
 import cfg
 import json
 import os
-import copy
 from collections import deque
 from ImageViewer import ImageViewer
 from ImageID import ImageID
-import time
+
 """
 Gallery.py : ** REQUIRED ** El vostre codi de la classe Gallery.
 
@@ -58,45 +57,72 @@ Notes:
 """
 
 class Gallery():
-    def __init__ (self,Image_viewer : ImageViewer = None, Image_ID: ImageID = None):
+    def __init__(self, image_viewer: ImageViewer = None, image_id: ImageID = None):
         self._uuids = deque()
         self._gallery_name = None
         self._gallery_description = None
         self._created_date = None
-        self._Image_viewer = Image_viewer
-        self._Image_ID = Image_ID
+        self._image_viewer = image_viewer
+        self._image_id = image_id
+        self._file = None
 
-    def load_file(self, file:str = ''):
-        if len(self._uuids) > 0:
-            self._uuids = deque()
-        self._file = file
-        with open(file, 'r') as file:
-                json_string = json.load(file)
+    def load_file(self, file: str) -> None:
+        # Neteja la galeria anterior
+        self._uuids.clear()
 
+        # Path absolut al JSON
+        if not os.path.isabs(file):
+            abs_path = os.path.join(cfg.get_root(), file)
+        else:
+            abs_path = file
 
-        self._gallery_name = json_string['gallery_name']
-        self._gallery_description = json_string['description']
-        self._created_date = json_string['created_date']
-        list_file_paths = json_string['images']
-        
-        root_path = cfg.get_root()
-        for file_path in list_file_paths:
-            file_path = os.path.join(root_path, file_path)
-            if os.path.exists(file_path):
-                self._uuids.append(cfg.get_uuid(file_path))
+        if not os.path.exists(abs_path):
+            # No petem; galeria buida
+            return
 
-    def show(self, mode: int):
-        for uuid in self._uuids:
-            self._Image_viewer.show_image(uuid, mode)
+        self._file = abs_path
+
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        self._gallery_name = data.get('gallery_name', '')
+        self._gallery_description = data.get('description', '')
+        self._created_date = data.get('created_date', '')
+        images = data.get('images', [])
+
+        root = cfg.get_root()
+        for rel_path in images:
+            img_path = rel_path
+            if not os.path.isabs(img_path):
+                img_path = os.path.join(root, rel_path)
+
+            if os.path.exists(img_path):
+                # UUID coherent amb la resta del sistema
+                if self._image_id is not None:
+                    uuid = self._image_id.generate_uuid(img_path)
+                else:
+                    canon = cfg.get_canonical_pathfile(img_path)
+                    uuid = str(cfg.get_uuid(canon))
+                if uuid is not None:
+                    self._uuids.append(uuid)
+
+    def show(self, mode: int = 0) -> None:
+        # Galeria buida o sense viewer → res a fer
+        if not self._uuids or self._image_viewer is None:
+            return
+
+        for uuid in list(self._uuids):
+            self._image_viewer.show_image(uuid, mode)
     
-    def add_image_at_end(self, uuid:str = ''):
+    def add_image_at_end(self, uuid: str) -> None:
         self._uuids.append(uuid)
 
-    def remove_first_image(self):
-        hola = self._uuids.popleft()
+    def remove_first_image(self) -> None:
+        # Deixem que deque llanci IndexError si està buida (el test ho comprova)
+        self._uuids.popleft()
         
-    def remove_last_image(self):
-        hola = self._uuids.pop()
+    def remove_last_image(self) -> None:
+        self._uuids.pop()
 
     def __str__(self):
         return 'Gallery'

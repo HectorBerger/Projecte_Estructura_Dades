@@ -36,9 +36,8 @@ import cfg
 
 class ImageID:
     def __init__(self):
-        # Mapes bidireccionals per consultes eficients
-        self._file2uuid = {}  # rel_path_canon (str) -> uuid_str
-        self._uuid2file = {}  # uuid_str -> rel_path_canon (str)
+        self._file2uuid = {}  # rel_path_canon -> uuid_str
+        self._uuid2file = {}  # uuid_str -> rel_path_canon
 
     def _to_rel_canonical(self, file: str) -> str:
         abs_path = file if os.path.isabs(file) else os.path.join(cfg.get_root(), file)
@@ -48,36 +47,32 @@ class ImageID:
     def generate_uuid(self, file: str) -> str:
         rel_path = self._to_rel_canonical(file)
 
-        # Ja registrat per aquest fitxer
+        # Ja existeix per aquest fitxer
         if rel_path in self._file2uuid:
             return self._file2uuid[rel_path]
 
-        # UUID determinista basat en el path relatiu canònic
-        uuid_obj = cfg.get_uuid(rel_path)  # requerit per l’enunciat
+        # UUID determinista basat en el path canònic
+        uuid_obj = cfg.get_uuid(rel_path)
         uuid_str = str(uuid_obj)
 
-        # Col·lisió improbable: mateix uuid assignat a un altre fitxer
+        # Col·lisió: mateix UUID per fitxer diferent
         other = self._uuid2file.get(uuid_str)
         if other is not None and other != rel_path:
-            raise ValueError(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
+            print(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
             return None
 
-        # Registra
         self._file2uuid[rel_path] = uuid_str
-        self._uuid2file[uuid_str]  = rel_path
+        self._uuid2file[uuid_str] = rel_path
         return uuid_str
 
     def get_uuid(self, file: str) -> str:
-        """Retorna l'UUID (str) associat a 'file' si existeix, altrament None."""
         rel_path = self._to_rel_canonical(file)
         return self._file2uuid.get(rel_path)
 
     def remove_uuid(self, uuid: str) -> None:
-        """Elimina el UUID del registre; si no existeix, no fa res."""
         rel_path = self._uuid2file.pop(uuid, None)
         if rel_path is not None:
             self._file2uuid.pop(rel_path, None)
-
 
     def __str__(self):
         return f'ImageID: {self._file2uuid}'

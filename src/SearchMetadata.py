@@ -64,70 +64,52 @@ Notes:
     - Aquests mètodes NO retornen objectes Gallery, sinó llistes simples
 """
 
-class SearchMetadata (): 
-    def __init__ (self, Image_Data: ImageData = None) :
-        self._ImageData = Image_Data or ImageData()
+from ImageData import ImageData
 
-    def prompt (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['prompt'].find(sub) != -1:
-                values.append(uuid)
-        return values
-    
-    def model (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['model'].find(sub) != -1:
-                values.append(uuid)
-        return values
-    
-    def seed (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['seed'].find(sub) != -1:
-                values.append(uuid)
+class SearchMetadata: 
+    def __init__(self, image_data: ImageData = None):
+        self._image_data = image_data or ImageData()
 
-        return values
-    
-    def cfg_scale (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['cfg_scale'].find(sub) != -1:
-                values.append(uuid)
-        return values
+    def _search_field(self, field: str, sub: str) -> list:
+        results = []
+        for uuid, metadata in self._image_data.get_Image_Data().items():
+            value = metadata.get(field)
+            if value is None:
+                continue
+            if sub in str(value):
+                results.append(uuid)
+        return results
 
-    def steps (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['steps'].find(sub) != -1:
-                values.append(uuid)
-        return values
+    def prompt(self, sub: str) -> list:
+        return self._search_field('prompt', sub)
     
-    def sampler (self, sub: str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['sampler'].find(sub) != -1:
-                values.append(uuid)
-        return values
+    def model(self, sub: str) -> list:
+        return self._search_field('model', sub)
     
-    def date (self, sub:str):
-        values  = []
-        for uuid, metadata in self._ImageData.get_Image_Data().items():
-            if metadata['date'].find(sub) != -1:
-                values.append(uuid)
-        return values
+    def seed(self, sub: str) -> list:
+        return self._search_field('seed', sub)
     
-    def and_operator (self, list1: list, list2: list):
+    def cfg_scale(self, sub: str) -> list:
+        return self._search_field('cfg_scale', sub)
+
+    def steps(self, sub: str) -> list:
+        return self._search_field('steps', sub)
+    
+    def sampler(self, sub: str) -> list:
+        return self._search_field('sampler', sub)
+    
+    def date(self, sub: str) -> list:
+        # camp correcte a ImageData: 'created_date'
+        return self._search_field('created_date', sub)
+    
+    def and_operator(self, list1: list, list2: list) -> list:
         return [x for x in list1 if x in list2]
     
-    def or_operator (self, list1: list, list2: list):
-        return list( set(list1) | set(list2))
+    def or_operator(self, list1: list, list2: list) -> list:
+        return list(set(list1) | set(list2))
         
     def __str__(self):
         return 'SearchMetadata'
     
     def __len__(self):
         return 0
-
-        
