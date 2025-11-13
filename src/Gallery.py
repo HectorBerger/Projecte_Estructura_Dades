@@ -112,20 +112,22 @@ class Gallery():
         self._gallery_description = data.get('description', '')
         self._created_date = data.get('created_date', '')
         images = data.get('images', [])
-
+        root = os.path.dirname(root)
         for rel_path in images:
             img_path = rel_path
             if not os.path.isabs(img_path):
                 img_path = os.path.join(root, rel_path)
                 canon = cfg.get_canonical_pathfile(img_path)
                 # UUID coherent amb la resta del sistema
+                uuid = str(cfg.get_uuid(canon))
+                """ 
                 if self._image_id is not None:
                     uuid = self._image_id.generate_uuid(img_path)
                 else:
                     uuid = str(cfg.get_uuid(canon))
+                """
                 if uuid is not None:
                     self._uuids.append(uuid)
-                    print("DEBUG: Afegida imatge a la galeria:", img_path, "UUID:", uuid) #NUNCA LLEGA AQUí
 
     def show(self) -> None:
         # Galeria buida o sense viewer → res a fer
