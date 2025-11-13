@@ -76,9 +76,6 @@ class Gallery():
         else:
             abs_path = file
 
-        if not os.path.exists(abs_path):
-            # No petem; galeria buida
-            return
 
         self._file = abs_path
 
