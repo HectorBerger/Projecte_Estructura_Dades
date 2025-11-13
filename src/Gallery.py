@@ -72,6 +72,9 @@ class Gallery():
         self._image_viewer = image_viewer
         self._image_id = image_id
         self._file = None
+    
+    def __iter__(self):
+        return iter(self._uuids)
 
     def load_file(self, file: str) -> None:
         # Neteja la galeria anterior
@@ -86,6 +89,7 @@ class Gallery():
             if not json_files:
                 raise FileNotFoundError(f"No s'ha trobat cap arxiu JSON dins del directori: {abs_path}")
             abs_path = json_files[0]
+            abs_path = cfg.get_canonical_pathfile(abs_path)
 
         if not os.path.isfile(abs_path):
             raise FileNotFoundError(f"No s'ha trobat l'arxiu JSON: {abs_path}")

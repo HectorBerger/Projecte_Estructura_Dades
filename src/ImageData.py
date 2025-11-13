@@ -72,7 +72,7 @@ class ImageData:
         return self._image_data.__iter__()
 
     def add_image(self, uuid: str, file: str) -> None:
-        if uuid not in self._image_data:
+        if uuid not in self._image_data.keys():
             self._image_data[uuid] = {
                 'file': file,
                 'prompt': None,
@@ -87,16 +87,17 @@ class ImageData:
             }
 
         else:
+            print("[ImageData] L'UUID ja existeix:", uuid)
             raise KeyError("COLISIÓ") #Evitar colisions
 
     def remove_image(self, uuid: str) -> None:
-        if uuid not in self._image_data:
+        if uuid not in self._image_data.keys():
             raise KeyError("No image found to remove with UUID:", uuid)
 
         del self._image_data[uuid]
 
     def load_metadata(self, uuid: str) -> None:
-        if uuid not in self._image_data:
+        if uuid not in self._image_data.keys():
             raise KeyError(f"Image with UUID {uuid} not found in collection.")
         
         dades = self._image_data[uuid]
@@ -105,20 +106,16 @@ class ImageData:
         path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), filepath))
         file = os.path.realpath(os.path.join(root, path))
         
+        metadata = {}
+        dimensions = (None, None)
         if not os.path.isdir(file) and os.path.exists(file):
-
-            img = Image.open(file)
-
-            metadata = getattr(img, "text", None)
-
-        """ 
-        try:
-            metadata = cfg.read_png_metadata(filepath)
-            dimensions = cfg.get_png_dimensions(filepath)
-        except AttributeError as e:
-            raise AttributeError(f"Error reading metadata/dimensions for {filepath}: {e}")
-        """
+            try:
+                metadata = cfg.read_png_metadata(file)
+                dimensions = cfg.get_png_dimensions(file)
+            except AttributeError as e:
+                raise AttributeError(f"Error reading metadata/dimensions for {filepath}: {e}")
             
+                
         if metadata:
             prompt = metadata.get('Prompt', None)
             model = metadata.get('Model', None)
@@ -129,7 +126,6 @@ class ImageData:
             generated = metadata.get('Generated', None)
             created_date = metadata.get('Created_Date', None)
     
-        dimensions = cfg.get_png_dimensions(self._image_data[uuid]['file'])
 
         self._image_data[uuid] = {
             'prompt': prompt,
@@ -145,7 +141,8 @@ class ImageData:
         }
         
     def _get_metadata_field(self, uuid: str, field: str) -> str:
-        if uuid not in self._image_data:
+        if uuid not in self._image_data.keys():
+            print("[ImageData] UUID inexistent:", uuid) ####NO DEBERíA FALLAR   ALGO PASA CON LOS UUIDS
             raise KeyError(f"Image with UUID {uuid} not found.")
         
         return str(self._image_data[uuid][field])

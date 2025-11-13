@@ -55,6 +55,10 @@ class ImageViewer:
         self._image = image_data
 
     def print_image(self, uuid: str) -> None:
+        if not uuid or not isinstance(uuid, str):
+            print("[ImageViewer] UUID invàlid")
+            return
+         
         try:
             w, h    = self._image.get_dimensions(uuid)
             prompt  = self._image.get_prompt(uuid)

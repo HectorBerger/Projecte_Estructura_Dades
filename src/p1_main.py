@@ -27,7 +27,7 @@ import cfg
 
 from PIL import Image, UnidentifiedImageError
 
-def create_mosaic(image_entries, out_file: Path, thumb_size=(200,200), cols=4, bg_color=(255,255,255)):
+def create_mosaic(gallery: Gallery, image_data: ImageData, out_file: Path, thumb_size=(200,200), cols=4, bg_color=(255,255,255)):
     """
     Crea un mosaico (collage) a partir de image_entries (iterable de tuples (uuid, data_dict)).
     Guarda el resultado en out_file i intenta obrir-lo amb el visualitzador per defecte.
@@ -36,12 +36,14 @@ def create_mosaic(image_entries, out_file: Path, thumb_size=(200,200), cols=4, b
     - thumb_size: mida de cada miniatura (width, height)
     - cols: nombre de columnes del mosaic
     """
-    entries = list(image_entries)
-    if not entries:
-        raise ValueError("No hay entradas para crear el mosaico.")
+
+    gallery_items = [] 
+    for uuid in gallery:
+        gallery_items.append((uuid, image_data._image_data[uuid]))
+    
 
     thumbs = []
-    for uid, data in entries:
+    for uid, data in gallery_items:
         file_path = data.get('file')
         if not file_path:
             print(f"Warning: entrada {uid} no tiene 'file', se omite.")
@@ -102,24 +104,25 @@ def main():
             img_data.add_image(uuid, img_file)
             img_data.load_metadata(uuid)
         
-            
-        
-    """ 
+     
     #4) Visualitzar imatges
     img_viewer = ImageViewer(img_data)
-    img_viewer.show_image(cfg.get_uuid(path_file_exemple), mode=1)
+    uuid_exemple = str(cfg.get_uuid(path_file_exemple))
+    
+    img_viewer.show_image("0b4993aa-093c-42a6-a90a-073dce964bf0", mode=1)
 
     #5) Carregar i mostrar galeries
     gallery = Gallery(img_viewer, img_id)
     gallery_file = os.path.join(cfg.get_root(), 'galleries', 'example_gallery.json')
-    gallery.load_gallery(gallery_file)
+    gallery.load_file(gallery_file)
+    create_mosaic(gallery, img_data, Path("output/mosaic.jpg"), thumb_size=(150,150), cols=5)
     
 
     #6) Fer cerques i crear galeries a partir dels resultats
     search = SearchMetadata(img_data)
     results = search.search_by_prompt("dragon", case_sensitive=False)
     print(f"Imatges trobades amb 'dragon' al prompt: {len(results)}")
-    """
+    
 
 if __name__ == "__main__":
     main()
