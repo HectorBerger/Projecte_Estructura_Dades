@@ -1,4 +1,4 @@
-# Projecte_Estructura_Dades
+# Projecte Estructura Dades
 
 ## Descripció
 
@@ -6,9 +6,10 @@ Projecte académic de l'assignatura d'Estructures de Dades del 2n curs de l'Engi
 
 ## Objectius
 
-- Implementar i comprendre estructures de dades fonamentals
+- Implementar i comprendre estructures de dades fonamentals implementant una galeria de imatges IA tipus https://lexica.art/
+- Cercar i crear galeries a partir de les metadates de les imatges
 - Aplicar algoritmes eficients de cerca i ordenació
-- Analitzar la complexitat temporal i espacial
+
 
 ## Estructura del Projecte
 
@@ -41,6 +42,6 @@ python p1_main.py
 
 ## Autor
 
-Alfons Baiges Parada
-Héctor Berger Martínez
-Diogo da Costa Lã Cabrita Teixeira
+- Alfons Baiges Parada
+- Héctor Berger Martínez
+- Diogo da Costa Lã Cabrita Teixeira
