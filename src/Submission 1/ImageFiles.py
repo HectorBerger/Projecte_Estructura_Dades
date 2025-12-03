@@ -37,6 +37,7 @@ class ImageFiles:
         self._added = []
         self._removed = []
 
+    """
     def reload_fs(self, path: str = None) -> None:
         # Directori arrel
         if path is None:
@@ -58,6 +59,31 @@ class ImageFiles:
                     rel_canon = cfg.get_canonical_pathfile(abs_path)
                     new_curr.add(rel_canon)
 
+        self._added = sorted(list(new_curr - self._prev))
+        self._removed = sorted(list(self._prev - new_curr))
+        self._prev = new_curr
+
+    """ 
+
+    def reload_fs(self, path: str = None) -> None:
+        # Determinar raíz
+        if path is None:
+            root = cfg.get_root()
+        else:
+            root = path
+            if not os.path.isabs(root):
+                root = os.path.join(cfg.get_root(), root)
+
+        new_curr = set()
+        # Recorrer filesystem y coleccionar rutas canónicas relativas a ROOT
+        for raiz, _, archivos in os.walk(root):
+            for archivo in archivos:
+                if archivo.lower().endswith(".png"):
+                    full_path = os.path.join(raiz, archivo)
+                    rel_canon = cfg.get_canonical_pathfile(full_path)
+                    new_curr.add(rel_canon)
+
+        # detectar añadidos/eliminados y actualizar estado
         self._added = sorted(list(new_curr - self._prev))
         self._removed = sorted(list(self._prev - new_curr))
         self._prev = new_curr

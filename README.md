@@ -43,5 +43,5 @@ python p1_main.py
 ## Autor
 
 - Alfons Baiges Parada
-- Héctor Berger Martínez
 - Diogo da Costa Lã Cabrita Teixeira
+- Héctor Berger Martínez
