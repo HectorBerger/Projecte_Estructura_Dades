@@ -52,10 +52,11 @@ class RecommenderSystem:
         self.vectors: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
 
         # Helpers per a accés ràpid
-        self.uuids: List[str] = list(self.vectors.keys())
-        self._image_vectors: List[List[float]] = [
-            entry.get("image_embedding", []) for entry in self.vectors.values()
-        ]
+        self.uuids: List[str] = []
+        self._image_vectors: List[List[float]] = []
+        for uid, entry in self.vectors.items():
+            self.uuids.append(uid)
+            self._image_vectors.append(entry.get("image_embedding", []))
 
         # Intefgració amb fase 1
         self.image_data: ImageData = image_data or ImageData()
@@ -78,6 +79,8 @@ class RecommenderSystem:
         self._uuid_to_idx = {uid: idx for idx, uid in enumerate(self.uuids)}
         self._norms = [self._vector_norm(vec) for vec in self._image_vectors]
 
+
+    # CODI REPETIT ENTRE COSINE I NORMES, arreglar
     @staticmethod
     def _vector_norm(vec: List[float]) -> float:
         return sum(x * x for x in vec) ** 0.5
@@ -142,6 +145,10 @@ class RecommenderSystem:
         - Timing: Tested on 1,000 queries
         - Scoring: 25 pts for precision + 15 pts for speed
         """
+
+        # Assegura que les dades estan preprocessades
+        if not self._norms or len(self._norms) != len(self._image_vectors):
+            self.preprocess()
 
         gallery = Gallery(self._viewer, self.image_id)
         gallery.images = []
