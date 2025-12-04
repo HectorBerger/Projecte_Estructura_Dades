@@ -17,7 +17,13 @@ Phases:
 """
 
 import json
-from datetime import datetime
+import heapq
+from typing import Dict, List, Tuple
+
+from Gallery import Gallery
+from ImageData import ImageData
+from ImageID import ImageID
+from ImageViewer import ImageViewer
 
 
 class RecommenderSystem:
@@ -39,9 +45,26 @@ class RecommenderSystem:
             image_data: (Optional) ImageData instance from Phase 1 for metadata access
             image_id: (Optional) ImageID instance from Phase 1 for UUID mapping
         """
-        # TODO: Load vectors from JSON file
-        # Structure should be: self.vectors = {uuid: {image_embedding: [...], text_embedding: [...]}}
-        pass
+        with open(vectors_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Llegeix i accepta {"uuid": {...}} i {"vectors": {...}}
+        self.vectors: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
+
+        # Helpers per a accés ràpid
+        self.uuids: List[str] = list(self.vectors.keys())
+        self._image_vectors: List[List[float]] = [
+            entry.get("image_embedding", []) for entry in self.vectors.values()
+        ]
+
+        # Intefgració amb fase 1
+        self.image_data: ImageData = image_data or ImageData()
+        self.image_id: ImageID = image_id or ImageID()
+        self._viewer: ImageViewer = ImageViewer(self.image_data)
+
+        # Caches preprocessats (omplerts a preprocess) per agilitat
+        self._norms: List[float] = []
+        self._uuid_to_idx: Dict[str, int] = {}
 
     def preprocess(self):
         """
@@ -52,8 +75,12 @@ class RecommenderSystem:
         that will speed up similarity computations.
 
         """
-        # TODO: Implement preprocessing
-        pass
+        self._uuid_to_idx = {uid: idx for idx, uid in enumerate(self.uuids)}
+        self._norms = [self._vector_norm(vec) for vec in self._image_vectors]
+
+    @staticmethod
+    def _vector_norm(vec: List[float]) -> float:
+        return sum(x * x for x in vec) ** 0.5
 
 
     @staticmethod
@@ -80,14 +107,14 @@ class RecommenderSystem:
         Implementation tips:
         - Handle edge cases: empty vectors, zero norms
         """
-        # Calculate dot product
+        # Calcula el producte escalar
         dot = sum(a * b for a, b in zip(vec_a, vec_b))
 
-        # Calculate magnitudes (norms)
+        # Calcula les magnituds (normes)
         norm_a = sum(a * a for a in vec_a) ** 0.5
         norm_b = sum(b * b for b in vec_b) ** 0.5
 
-        # Return similarity (handle division by zero)
+        # Retorna la similitud (gestiona divisió per zero)
         return dot / (norm_a * norm_b) if norm_a and norm_b else 0.0
 
     def find_similar_images(self, query_uuid: str, k: int = 10) -> Gallery:
@@ -114,18 +141,46 @@ class RecommenderSystem:
         - Metric: Recall@100 (your top-10 vs ground truth top-100)
         - Timing: Tested on 1,000 queries
         - Scoring: 25 pts for precision + 15 pts for speed
-
-
-        TODO: Implement this method
         """
-        # TODO:
-        # 1. Get query vector from self.vectors
-        # 2. Calculate similarity to other images (use cosine_similarity)
-        # 3. Sort by similarity (descending)
-        # 4. Create and return Gallery with top-k images
 
-        gallery = Gallery()
+        gallery = Gallery(self._viewer, self.image_id)
         gallery.images = []
+
+        # Comprovacions bàsiques
+        if query_uuid not in self.vectors:
+            return gallery
+
+        query_vec = self.vectors[query_uuid].get("image_embedding", [])
+        if not query_vec:
+            return gallery
+
+        query_norm = self._vector_norm(query_vec)
+        if not query_norm:
+            return gallery
+
+        uuids = self.uuids
+        vectors = self._image_vectors
+        norms = self._norms
+        scores: List[Tuple[float, str]] = []
+        append_score = scores.append
+
+        # Calcula la similitud cosinus per a cada imatge
+        for idx, uid in enumerate(uuids):
+            if uid == query_uuid:
+                continue
+
+            vec = vectors[idx]
+            norm_b = norms[idx] if idx < len(norms) else self._vector_norm(vec)
+            if not norm_b:
+                continue
+
+            dot = sum(a * b for a, b in zip(query_vec, vec))
+            sim = dot / (query_norm * norm_b)
+            append_score((sim, uid))
+
+        # Obté les k imatges més similars ordenades
+        top_k = heapq.nlargest(k, scores, key=lambda x: x[0])
+        gallery.images = [uid for _, uid in top_k]
         return gallery
 
     def find_transition_prompts(self, uuid_1: str, uuid_2: str) -> list:
