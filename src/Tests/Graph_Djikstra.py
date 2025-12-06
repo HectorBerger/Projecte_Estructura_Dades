@@ -15,9 +15,13 @@ class GrafHash:
     
 ################################Definicio Class _Vertex       
     
-    def __init__(self, ln=[],lv=[],lp=[],digraf=False):
+    def __init__(self, ln=None, lv=None, lp=None, digraf=False):
         """Crea graf (no dirigit per defecte, digraf si dirigit es True.
         """
+        if ln is None: ln = []
+        if lv is None: lv = []
+        if lp is None: lp = []
+        
         self._nodes = {}
         self._out = { }
         self._in={} if digraf else self._out
@@ -107,7 +111,7 @@ class GrafHash:
         dist[n1] = 0
 
         count = 0
-        while count < len(self._nodes())-1 :
+        while count < len(self._nodes)-1 :
             count += 1
             u = self.minDistance(dist, visitat)
             visitat[u] = True

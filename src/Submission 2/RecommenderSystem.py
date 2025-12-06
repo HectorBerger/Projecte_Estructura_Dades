@@ -68,7 +68,7 @@ class RecommenderSystem:
             data = json.load(f)
 
         # Llegeix i accepta {"uuid": {...}} i {"vectors": {...}}
-        s: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
+        self.vectors: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
 
         # Helpers per a accés ràpid
         self.uuids: List[str] = []
@@ -259,12 +259,18 @@ class RecommenderSystem:
         """
         # TODO:
         # 1. Validate that both UUIDs exist
-        if uuid_1 not in self.uuids and uuid_2 not in self.uuids:
-            raise ValueError
+        if uuid_1 not in self.vectors or uuid_2 not in self.vectors:
+            return []
 
         # 2. Get prompts using self.image_data if available
         prompt1 = self.image_data.get_prompt(uuid_1)
         prompt2 = self.image_data.get_prompt(uuid_2)
+
+        if not prompt1 or not prompt2:
+            # opció 1: retornar mínim
+            return [prompt1 or "", prompt2 or ""]
+            # o opció 2: error clar
+            # raise ValueError("Falta prompt per uuid_1 o uuid_2")
 
         # 3. Build set of images to explore
         # Clean and split prompts
@@ -288,13 +294,28 @@ class RecommenderSystem:
         
         # Convert to list for indexing
         candidates = list(img_exp)
+
+        if uuid_1 not in img_exp or uuid_2 not in img_exp:
+            # assegura que hi són
+            img_exp.update([uuid_1, uuid_2])
+            candidates = list(img_exp)
+
+        if len(candidates) < 2:
+            return [prompt1, prompt2]
         
         # 4. Build similarity graph between candidates
         similarity = []
         similar_vertex = []
         
         # Pre-fetch vectors for performance
-        candidate_vectors = {uid: self.vectors[uid]["image_embedding"] for uid in candidates}
+        candidate_vectors = {
+            uid: self.vectors[uid].get("image_embedding", [])
+            for uid in candidates
+        }
+        # filtra nodes sense vector
+        candidates = [uid for uid in candidates if candidate_vectors[uid]]
+        if len(candidates) < 2:
+            return [prompt1, prompt2]
         
         # Compute pairwise similarities
         # We use 1 - similarity as distance because Dijkstra finds minimum path
