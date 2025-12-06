@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+"""
+ImageID.py : ** REQUIRED ** El vostre codi de la classe ImageID.
+
+Aquesta classe s'encarrega de generar i gestionar identificadors únics (UUID)
+per a cada imatge de la col·lecció.
+
+Funcionalitat:
+    - Generar un UUID únic a partir del path canònic d'un arxiu
+    - Mantenir un registre dels UUID generats per evitar col·lisions
+    - Permetre consultar i eliminar UUID
+
+Mètodes a implementar:
+    - generate_uuid(file: str) -> str
+        Genera un UUID únic per a l'arxiu especificat.
+        Ha de comprovar que el UUID no estigui ja en ús.
+        Si hi ha col·lisió (cas extremadament improbable), retorna None i
+        mostra un missatge d'error.
+
+    - get_uuid(file: str) -> str
+        Retorna el UUID associat a l'arxiu, si ja ha estat generat.
+        Si no existeix, retorna None.
+
+    - remove_uuid(uuid: str) -> None
+        Elimina el UUID del registre d'identificadors actius.
+        Després d'eliminar-lo, aquest UUID es podrà tornar a utilitzar.
+
+Notes:
+    - Els UUID han de seguir el format estàndard (128 bits)
+    - Podeu utilitzar la funció cfg.get_uuid() com a base
+    - Els UUID s'emmagatzemen com a strings
+    - Un UUID només es pot generar una vegada (fins que s'elimini)
+"""
+import os
+import cfg
+
+class ImageID:
+    def __init__(self):
+        self._file2uuid = {}  # rel_path_canon -> uuid_str
+        self._uuid2file = {}  # uuid_str -> rel_path_canon
+
+    def _rel_to_canonical(self, file: str) -> str:
+        abs_path = file if os.path.isabs(file) else os.path.join(cfg.get_root(), file)
+        abs_path = os.path.realpath(abs_path)
+        return cfg.get_canonical_pathfile(abs_path)
+    
+    def generate_uuid(self, file: str) -> str:
+        canon = self._rel_to_canonical(file) 
+
+        # Ja existeix per aquest fitxer
+        if canon in self._file2uuid:
+            return self._file2uuid[canon]
+
+        # UUID determinista basat en el path canònic
+        uuid_obj = cfg.get_uuid(canon)
+        uuid_str = str(uuid_obj)
+
+        # Col·lisió: mateix UUID per fitxer diferent
+        other = self._uuid2file.get(uuid_str)
+        if other is not None and other != canon:
+            print(f"ERROR: Col·lisió UUID: {uuid_str} ja assignat a {other}")
+            return None
+
+        self._file2uuid[canon] = uuid_str
+        self._uuid2file[uuid_str] = canon
+        return uuid_str
+
+    def get_uuid(self, file: str) -> str:
+        canon = self._rel_to_canonical(file)
+        return self._file2uuid.get(canon)
+
+    def remove_uuid(self, uuid: str) -> None:
+        canon = self._uuid2file.pop(uuid, None)
+        if canon is not None:
+            self._file2uuid.pop(canon, None)
+
+    def __str__(self):
+        return f'ImageID: {self._file2uuid}'
+    
+    def __len__(self):
+        return len(self._file2uuid)
