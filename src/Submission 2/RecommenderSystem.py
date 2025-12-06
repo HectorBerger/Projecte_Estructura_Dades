@@ -20,11 +20,21 @@ import json
 import heapq
 from typing import Dict, List, Tuple
 
+from Graph_Djikstra import GrafHash
+
 from Gallery import Gallery
 from ImageData import ImageData
 from ImageID import ImageID
 from ImageViewer import ImageViewer
+from SearchMetadata import SearchMetadata
 
+STOP_WORDS = {
+        'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'by',
+        'with', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
+        'do', 'does', 'did', 'will', 'would', 'should', 'could', 'may', 'might', 'must',
+        'can', 'that', 'this', 'it', 'as', 'from', 'up', 'about', 'out', 'if', 'so',
+        'than', 'no', 'not', 'only', 'own', 'such', 'too', 'very', 'just'
+        }
 
 class RecommenderSystem:
     """
@@ -34,7 +44,16 @@ class RecommenderSystem:
         
         vectors_path: Path to the JSON file containing CLIP vectors
     """
-
+    __slots__ = (
+        'vectors',
+        'uuids',
+        '_image_vectors',
+        'image_data',
+        'image_id',
+        '_viewer',
+        '_norms',
+        '_uuid_to_idx',
+    )
     def __init__(self, vectors_path: str, image_data=None, image_id=None):
         """
         Initialize the recommender system by loading CLIP vectors.
@@ -49,7 +68,7 @@ class RecommenderSystem:
             data = json.load(f)
 
         # Llegeix i accepta {"uuid": {...}} i {"vectors": {...}}
-        self.vectors: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
+        s: Dict[str, Dict[str, List[float]]] = data.get("vectors", data)
 
         # Helpers per a accés ràpid
         self.uuids: List[str] = []
@@ -58,7 +77,7 @@ class RecommenderSystem:
             self.uuids.append(uid)
             self._image_vectors.append(entry.get("image_embedding", []))
 
-        # Intefgració amb fase 1
+        # Integració amb fase 1
         self.image_data: ImageData = image_data or ImageData()
         self.image_id: ImageID = image_id or ImageID()
         self._viewer: ImageViewer = ImageViewer(self.image_data)
@@ -144,6 +163,12 @@ class RecommenderSystem:
         - Metric: Recall@100 (your top-10 vs ground truth top-100)
         - Timing: Tested on 1,000 queries
         - Scoring: 25 pts for precision + 15 pts for speed
+
+        # IMPLEMENTED:
+        # 1. Get query vector from self.vectors
+        # 2. Calculate similarity to other images (use cosine_similarity)
+        # 3. Sort by similarity (descending)
+        # 4. Create and return Gallery with top-k images
         """
 
         # Assegura que les dades estan preprocessades
@@ -234,10 +259,70 @@ class RecommenderSystem:
         """
         # TODO:
         # 1. Validate that both UUIDs exist
-        # 2. Get prompts using self.image_data if available
-        # 3. Build set of images to explore
-        # 4. Build similarity graph between candidates
-        # 5. Find path 
-        # 6. Extract and return prompts from path
+        if uuid_1 not in self.uuids and uuid_2 not in self.uuids:
+            raise ValueError
 
-        return []
+        # 2. Get prompts using self.image_data if available
+        prompt1 = self.image_data.get_prompt(uuid_1)
+        prompt2 = self.image_data.get_prompt(uuid_2)
+
+        # 3. Build set of images to explore
+        # Clean and split prompts
+        words1 = prompt1.lower().replace('.', '').replace(',', '').split()
+        words2 = prompt2.lower().replace('.', '').replace(',', '').split()
+        
+        # Create bag of words without stop words
+        bag_of_words = set(words1 + words2) - STOP_WORDS
+        
+        search_metadata = SearchMetadata(self.image_data)
+
+        img_exp = {uuid_1, uuid_2}
+        
+        for word in bag_of_words:
+            # Add images that match the word in their prompt
+            found_uuids = search_metadata.prompt(word)
+            img_exp.update(found_uuids)
+
+        # Filter out UUIDs that don't have vectors
+        img_exp = {uid for uid in img_exp if uid in self.vectors}
+        
+        # Convert to list for indexing
+        candidates = list(img_exp)
+        
+        # 4. Build similarity graph between candidates
+        similarity = []
+        similar_vertex = []
+        
+        # Pre-fetch vectors for performance
+        candidate_vectors = {uid: self.vectors[uid]["image_embedding"] for uid in candidates}
+        
+        # Compute pairwise similarities
+        # We use 1 - similarity as distance because Dijkstra finds minimum path
+        for i in range(len(candidates)):
+            u = candidates[i]
+            vec_u = candidate_vectors[u]
+            
+            for j in range(i + 1, len(candidates)):
+                v = candidates[j]
+                vec_v = candidate_vectors[v]
+                
+                sim = self.cosine_similarity(vec_u, vec_v)
+                
+                # Ensure distance is non-negative
+                dist = max(0.0, 1.0 - sim)
+                
+                #Graf Complet de momento
+                similar_vertex.append((u, v))
+                similarity.append(dist)
+
+        G = GrafHash(candidates, similar_vertex, similarity, digraf=False)
+
+        # 5. Find path 
+        path_uuids = G.camiMesCurt(uuid_1, uuid_2)
+
+        # 6. Extract and return prompts from path
+        path_prompts = []
+        for uid in path_uuids:
+            path_prompts.append(self.image_data.get_prompt(uid))
+
+        return path_prompts

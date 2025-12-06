@@ -6,10 +6,9 @@ Projecte académic de l'assignatura d'Estructures de Dades del 2n curs de l'Engi
 
 ## Objectius
 
-- Implementar i comprendre estructures de dades fonamentals implementant una galeria de imatges IA tipus https://lexica.art/
+- Implementar i comprendre estructures de dades fonamentals implementant una galeria de imatges IA tipus <https://lexica.art/>
 - Cercar i crear galeries a partir de les metadates de les imatges
 - Aplicar algoritmes eficients de cerca i ordenació
-
 
 ## Estructura del Projecte
 
