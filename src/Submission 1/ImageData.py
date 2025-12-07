@@ -201,3 +201,6 @@ class ImageData:
     
     def __len__(self):
         return len(self._image_data.keys())
+
+    def __iter__(self):
+        return self._image_data.__iter__()

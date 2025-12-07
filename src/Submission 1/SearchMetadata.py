@@ -72,11 +72,9 @@ class SearchMetadata:
 
     def _search_field(self, field: str, sub: str) -> list:
         results = []
-        for uuid, metadata in self._image_data.get_Image_Data().items():
+        for uuid, metadata in self._image_data:
             value = metadata.get(field)
-            if value is None:
-                continue
-            if sub in str(value):
+            if value != None and value.find(sub) >= 0:
                 results.append(uuid)
         return results
 
