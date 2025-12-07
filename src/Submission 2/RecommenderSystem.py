@@ -180,14 +180,17 @@ class RecommenderSystem:
 
         # Comprovacions bàsiques
         if query_uuid not in self.vectors:
+            print("query_uuid not in vectors")
             return gallery
 
         query_vec = self.vectors[query_uuid].get("image_embedding", [])
         if not query_vec:
+            print(" not  query_vec")
             return gallery
 
         query_norm = self._vector_norm(query_vec)
         if not query_norm:
+            print(" not  query_norm")
             return gallery
 
         uuids = self.uuids
@@ -266,12 +269,6 @@ class RecommenderSystem:
         prompt1 = self.image_data.get_prompt(uuid_1)
         prompt2 = self.image_data.get_prompt(uuid_2)
 
-        if not prompt1 or not prompt2:
-            # opció 1: retornar mínim
-            return [prompt1 or "", prompt2 or ""]
-            # o opció 2: error clar
-            # raise ValueError("Falta prompt per uuid_1 o uuid_2")
-
         # 3. Build set of images to explore
         # Clean and split prompts
         words1 = prompt1.lower().replace('.', '').replace(',', '').split()
@@ -294,28 +291,13 @@ class RecommenderSystem:
         
         # Convert to list for indexing
         candidates = list(img_exp)
-
-        if uuid_1 not in img_exp or uuid_2 not in img_exp:
-            # assegura que hi són
-            img_exp.update([uuid_1, uuid_2])
-            candidates = list(img_exp)
-
-        if len(candidates) < 2:
-            return [prompt1, prompt2]
         
         # 4. Build similarity graph between candidates
         similarity = []
         similar_vertex = []
         
         # Pre-fetch vectors for performance
-        candidate_vectors = {
-            uid: self.vectors[uid].get("image_embedding", [])
-            for uid in candidates
-        }
-        # filtra nodes sense vector
-        candidates = [uid for uid in candidates if candidate_vectors[uid]]
-        if len(candidates) < 2:
-            return [prompt1, prompt2]
+        candidate_vectors = {uid: self.vectors[uid]["image_embedding"] for uid in candidates} 
         
         # Compute pairwise similarities
         # We use 1 - similarity as distance because Dijkstra finds minimum path
@@ -329,7 +311,7 @@ class RecommenderSystem:
                 
                 sim = self.cosine_similarity(vec_u, vec_v)
                 
-                # Ensure distance is non-negative
+                # Ensure distance is non-negative (Habría que comprobar que en algún caso podría ser negativa, lo dudo pporq cos_sim es [-1,1])
                 dist = max(0.0, 1.0 - sim)
                 
                 #Graf Complet de momento

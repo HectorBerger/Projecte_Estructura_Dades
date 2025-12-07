@@ -76,6 +76,8 @@ class SearchMetadata:
             value = metadata.get(field)
             if value is None:
                 continue
+            else:
+                print(value,sub) #value siempre es None este es el error
             if sub in str(value):
                 results.append(uuid)
         return results
