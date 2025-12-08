@@ -92,6 +92,7 @@ class ImageData:
         del self._image_data[uuid]
 
     def load_metadata(self, uuid: str) -> None:
+
         if uuid not in self._image_data.keys():
             raise KeyError(f"Image with UUID {uuid} not found in collection.")
         
@@ -135,7 +136,6 @@ class ImageData:
                 'dimensions': dimensions
 
             }
-        
     def _get_metadata_field(self, uuid: str, field: str) -> str:
         if uuid not in self._image_data.keys():
             raise KeyError(f"Image with UUID {uuid} not found.")
@@ -144,6 +144,28 @@ class ImageData:
         
         return str(self._image_data[uuid][field])
     
+#    def get_count(self):
+        cotas_querys = {
+            'portrait': 0,
+            'art': 0,
+            'painting': 0,
+            'digital': 0,
+            'fantasy': 0
+        }
+        for uuid, metadata in self._image_data.items():
+            prompt = metadata['prompt']
+            if prompt != None and prompt.find('portrait') >= 0:
+                cotas_querys['portrait'] += 1
+            if prompt != None and prompt.find('art')>= 0:
+                cotas_querys['art'] += 1
+            if prompt != None and prompt.find('painting')>= 0:
+                cotas_querys['painting'] += 1
+            if prompt != None and prompt.find('digital')>= 0:
+                cotas_querys['digital'] += 1
+            if prompt != None and prompt.find('fantasy')>= 0:
+                cotas_querys['fantasy'] += 1
+        return cotas_querys
+
     def get_file(self, uuid:str):
         return self._get_metadata_field(uuid, 'file')
 

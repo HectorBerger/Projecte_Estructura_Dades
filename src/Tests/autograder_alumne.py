@@ -214,6 +214,8 @@ def run_phase1_tests():
         # Test 4: SearchMetadata
         print("[4/4] Testing SearchMetadata...")
         test4_start = time.time()
+        #cotas_query = image_data.get_count()
+        #print(cotas_query)
         try:
             searcher = SearchMetadata(image_data)
             # Expected result counts for each query
