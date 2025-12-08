@@ -106,7 +106,7 @@ class RecommenderSystem:
 
 
     @staticmethod
-    def cosine_similarity(vec_a, vec_b):
+    def cosine_similarity(vec_a, vec_b, norm_a=None, norm_b=None):
         """
         Compute cosine similarity between two vectors.
 
@@ -129,12 +129,12 @@ class RecommenderSystem:
         Implementation tips:
         - Handle edge cases: empty vectors, zero norms
         """
+        # Calcula les magnituds (normes)
+        norm_a = norm_a if norm_a is not None else RecommenderSystem._vector_norm(vec_a)
+        norm_b = norm_b if norm_b is not None else RecommenderSystem._vector_norm(vec_b)
+
         # Calcula el producte escalar
         dot = sum(a * b for a, b in zip(vec_a, vec_b))
-
-        # Calcula les magnituds (normes)
-        norm_a = sum(a * a for a in vec_a) ** 0.5
-        norm_b = sum(b * b for b in vec_b) ** 0.5
 
         # Retorna la similitud (gestiona divisió per zero)
         return dot / (norm_a * norm_b) if norm_a and norm_b else 0.0
@@ -209,8 +209,7 @@ class RecommenderSystem:
             if not norm_b:
                 continue
 
-            dot = sum(a * b for a, b in zip(query_vec, vec))
-            sim = dot / (query_norm * norm_b)
+            sim = self.cosine_similarity(query_vec, vec, query_norm, norm_b)
             append_score((sim, uid))
 
         # Obté les k imatges més similars ordenades
