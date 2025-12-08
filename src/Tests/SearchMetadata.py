@@ -6,7 +6,7 @@ import sys
 import os
 import os.path
 import uuid
-from Gallery import Gallery
+
 from ImageData import ImageData
 
 """
@@ -73,12 +73,8 @@ class SearchMetadata:
     def _search_field(self, field: str, sub: str) -> list:
         results = []
         for uuid, metadata in self._image_data.get_Image_Data().items():
-            value = metadata.get(field)
-            if value is None:
-                continue
-            else:
-                print(value,sub) #value siempre es None este es el error
-            if sub in str(value):
+            value = metadata[field]
+            if value != None and value.find(sub) >= 0:
                 results.append(uuid)
         return results
 

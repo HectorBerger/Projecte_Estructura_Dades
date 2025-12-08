@@ -49,19 +49,15 @@ Mètodes a implementar:
     - get_dimensions(uuid: str) -> tuple
         Retorna una tupla (width, height) amb les dimensions de la imatge.
 
-Notes:
-    - Utilitzeu la llibreria PIL/Pillow per llegir metadades:
-      img = Image.open(file)
-      metadata = img.text
-    - Si un camp no existeix, retorneu "None" (string)
-    - Les dimensions es llegeixen amb img.width i img.height
+
     - Tots els camps de metadades es guarden com a strings
 """
 import json
 from typing import Dict
 import cfg
 import os
-from PIL import Image
+
+
 class ImageData:
 
     __slots__ = '_image_data'
@@ -102,7 +98,7 @@ class ImageData:
         dades = self._image_data[uuid]
         filepath = dades['file']
         root = cfg.get_root()
-        path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), filepath))
+        path = cfg.get_canonical_pathfile(os.path.join(cfg.get_root(), filepath)).replace('../', '')
         file = os.path.realpath(os.path.join(root, path))
         
         metadata = {}
@@ -116,14 +112,14 @@ class ImageData:
             
                 
         if metadata:
-            prompt = metadata.get('Prompt', None)
-            model = metadata.get('Model', None)
-            seed = metadata.get('Seed', None)
-            cfg_scale = metadata.get('CFG_Scale', None)
-            steps = metadata.get('Steps', None)
-            sampler = metadata.get('Sampler', None)
-            generated = metadata.get('Generated', None)
-            created_date = metadata.get('Created_Date', None)
+            prompt = metadata.get('Prompt', metadata.get('prompt', None))
+            model = metadata.get('Model', metadata.get('model', None))
+            seed = metadata.get('Seed', metadata.get('seed', None))
+            cfg_scale = metadata.get('CFG_Scale', metadata.get('cfg_scale', None))
+            steps = metadata.get('Steps', metadata.get('steps', None))
+            sampler = metadata.get('Sampler', metadata.get('sampler', None))
+            generated = metadata.get('Generated', metadata.get('generated', None))
+            created_date = metadata.get('Created_Date', metadata.get('created_date', None))
     
 
             self._image_data[uuid] = {

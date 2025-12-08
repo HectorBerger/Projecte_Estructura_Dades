@@ -240,7 +240,7 @@ def run_phase1_tests():
                         expected = expected_counts[query]
                         if results != expected:
                             mismatches.append(f"  '{query}': expected {expected}, got {results}")
-                        print(f"INFO [Search]: prompt('{query}') found {results} results")
+                        print(f"INFO [Search]: prompt('{query}') found {len(results)} results")
                     else:
                         print(f"INFO [Search]: prompt('{query}') found {results} results")
                 except:

@@ -23,7 +23,7 @@ import uuid
 # ROOT_DIR_DIOGO = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "generated_images"))        
 # ROOT_DIR_GitHub =  r"C:\Users\34660\OneDrive - UAB\Enginyeria de Dades UAB\2n curs\1r quatri 2n\Estructures de Dades\Projecte_Estructura_Dades\generated_images"  # Windows                         # Github
 ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), "..","..", "data"))
-# ROOT_DIR = r"/opt/_uab/ed/DS_fall25-main/generated_images"          # Linux
+# ROOT_DIR = r"/opt/_uab/ed/DS_fall25-main/generated_images"    s      # Linux
 # ROOT_DIR = r"/Users/usuari/_uab/ed/DS_fall25-main/generated_images" # MacOS
 #
 # Nota: En plataforma Windows cal utilitzar strings literals, doncs el símbol
