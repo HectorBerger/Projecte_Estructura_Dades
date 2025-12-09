@@ -4,13 +4,81 @@ import os
 import sys
 import random
 from pathlib import Path
+import networkx as nx
+import re
 
 # Add Submission 1 to path for imports
-sys.path.append(os.path.abspath("../Submission 1"))
+sys.path.append(str(Path(__file__).parent.parent / "Submission 1"))
 
 from RecommenderSystem import RecommenderSystem
 from ImageData import ImageData
 from ImageID import ImageID
+from SearchMetadata import SearchMetadata
+
+
+def find_optimal_path_networkx(rs, uuid_1, uuid_2):
+    """
+    Find optimal path using NetworkX and ground truth logic (dense graph + Dijkstra).
+    """
+    if uuid_1 not in rs.vectors or uuid_2 not in rs.vectors:
+        return []
+        
+    image_data = rs.image_data
+    # Initialize SearchMetadata with populated imageData
+    sm = SearchMetadata(image_data)
+    
+    STOP_WORDS = {
+        'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'by',
+        'with', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
+        'do', 'does', 'did', 'will', 'would', 'should', 'could', 'may', 'might', 'must',
+        'can', 'that', 'this', 'it', 'as', 'from', 'up', 'about', 'out', 'if', 'so',
+        'than', 'no', 'not', 'only', 'own', 'such', 'too', 'very', 'just'
+    }
+    
+    p1 = image_data.get_prompt(uuid_1)
+    p2 = image_data.get_prompt(uuid_2)
+    
+    def get_words(text):
+        if not text: return set()
+        return set(re.findall(r'\b[a-z]+\b', text.lower())) - STOP_WORDS
+        
+    words = get_words(p1) | get_words(p2)
+    
+    candidates = {uuid_1, uuid_2}
+    for w in words:
+        # SearchMetadata returns list of UUIDs
+        candidates.update(sm.prompt(w))
+        
+    # Validation: must be in vectors
+    candidates = [u for u in candidates if u in rs.vectors]
+    
+    # Build Graph
+    G = nx.Graph()
+    candidate_vectors = {u: rs.vectors[u]['image_embedding'] for u in candidates}
+    
+    nodes = list(candidates)
+    n = len(nodes)
+    
+    for i in range(n):
+        u = nodes[i]
+        vec_u = candidate_vectors[u]
+        G.add_node(u) # Ensure node exists
+        for j in range(i + 1, n):
+            v = nodes[j]
+            vec_v = candidate_vectors[v]
+            
+            sim = rs.cosine_similarity(vec_u, vec_v)
+            # Distance: 1 - sim
+            dist = 1.0 - sim
+            if dist < 0: dist = 0.0
+            
+            G.add_edge(u, v, weight=dist)
+            
+    try:
+        path = nx.shortest_path(G, source=uuid_1, target=uuid_2, weight='weight')
+        return [image_data.get_prompt(u) for u in path]
+    except nx.NetworkXNoPath:
+        return []
 
 def generate_ground_truth():
     # Paths
@@ -103,7 +171,7 @@ def generate_ground_truth():
             
         print(f"Finding path from {u1} to {u2}...")
         try:
-            prompts = rs.find_transition_prompts(u1, u2)
+            prompts = find_optimal_path_networkx(rs, u1, u2)
             
             if prompts:
                 # Create word dict for evaluation
@@ -144,3 +212,4 @@ def generate_ground_truth():
 
 if __name__ == "__main__":
     generate_ground_truth()
+    
